@@ -293,7 +293,7 @@ namespace Typography.OpenFont.CFF
         internal void ChangeFirstInstToGlyphWidthValue()
         {
             //check the first element must be loadint
-            Type2Instruction firstInst = _insts[0];
+            var firstInst = _insts[0];
             if (firstInst.Op != OperatorName.LoadInt) { throw new NotSupportedException(); }
             //the replace
             _insts[0] = new Type2Instruction(OperatorName.GlyphWidth, firstInst.Value);
@@ -324,14 +324,14 @@ namespace Typography.OpenFont.CFF
 
         internal void dbugDumpInstructionListToFile(string filename)
         {
-            using (FileStream fs = new FileStream(filename, FileMode.Create))
-            using (StreamWriter w = new StreamWriter(fs))
+            using (var fs = new FileStream(filename, FileMode.Create))
+            using (var w = new StreamWriter(fs))
             {
 
-                int j = _insts.Count;
-                for (int i = 0; i < j; ++i)
+                var j = _insts.Count;
+                for (var i = 0; i < j; ++i)
                 {
-                    Type2Instruction inst = _insts[i];
+                    var inst = _insts[i];
 
                     w.Write("[" + i + "] ");
                     if (inst.Op == OperatorName.LoadInt)
@@ -385,7 +385,7 @@ namespace Typography.OpenFont.CFF
             _msBuffer.Position = 0;
             _msBuffer.Write(buffer, 0, buffer.Length);
             _msBuffer.Position = 0;
-            int len = buffer.Length;
+            var len = buffer.Length;
             //
             _insts = new Type2GlyphInstructionList();
 #if DEBUG
@@ -398,9 +398,9 @@ namespace Typography.OpenFont.CFF
 #endif
 
             byte b0 = 0;
-            int hintStemCount = 0;
+            var hintStemCount = 0;
 
-            bool cont = true;
+            var cont = true;
 
             while (cont && _reader.BaseStream.Position < len)
             {
@@ -436,8 +436,8 @@ namespace Typography.OpenFont.CFF
                         //a ShortInt value is specified by using the operator (28) followed by two bytes
                         //which represent numbers between –32768 and + 32767.The
                         //most significant byte follows the(28)
-                        byte s_b0 = _reader.ReadByte();
-                        byte s_b1 = _reader.ReadByte();
+                        var s_b0 = _reader.ReadByte();
+                        var s_b1 = _reader.ReadByte();
                         _insts.AddInt((short)((s_b0 << 8) | (s_b1)));
                         //
                         if (_doStemCount)
@@ -666,14 +666,14 @@ namespace Typography.OpenFont.CFF
 
             //---------------------- 
             //this is my hintmask extension, => to fit with our Evaluation stack
-            int properNumberOfMaskBytes = (hintStemCount + 7) / 8;
+            var properNumberOfMaskBytes = (hintStemCount + 7) / 8;
             if (_reader.BaseStream.Position + properNumberOfMaskBytes >= _reader.BaseStream.Length)
             {
                 throw new NotSupportedException();
             }
             if (properNumberOfMaskBytes > 4)
             {
-                int remaining = properNumberOfMaskBytes;
+                var remaining = properNumberOfMaskBytes;
 
                 for (; remaining > 3;)
                 {
@@ -762,7 +762,7 @@ namespace Typography.OpenFont.CFF
             }
             //---------------------- 
             //this is my hintmask extension, => to fit with our Evaluation stack
-            int properNumberOfMaskBytes = (hintStemCount + 7) / 8;
+            var properNumberOfMaskBytes = (hintStemCount + 7) / 8;
             if (_reader.BaseStream.Position + properNumberOfMaskBytes >= _reader.BaseStream.Length)
             {
                 throw new NotSupportedException();
@@ -770,7 +770,7 @@ namespace Typography.OpenFont.CFF
 
             if (properNumberOfMaskBytes > 4)
             {
-                int remaining = properNumberOfMaskBytes;
+                var remaining = properNumberOfMaskBytes;
 
                 for (; remaining > 3;)
                 {

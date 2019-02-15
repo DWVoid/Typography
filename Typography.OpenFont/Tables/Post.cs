@@ -66,15 +66,15 @@ namespace Typography.OpenFont.Tables
         protected override void ReadContentFrom(BinaryReader reader)
         {
             //header
-            uint version = reader.ReadUInt32(); //16.16
+            var version = reader.ReadUInt32(); //16.16
             _italicAngle = reader.ReadUInt32();
             _underlinePosition = reader.ReadInt16();
             _underlineThickness = reader.ReadInt16();
-            uint isFixedPitch = reader.ReadUInt32();
-            uint minMemType42 = reader.ReadUInt32();
-            uint maxMemType42 = reader.ReadUInt32();
-            uint minMemType1 = reader.ReadUInt32();
-            uint maxMemType1 = reader.ReadUInt32();
+            var isFixedPitch = reader.ReadUInt32();
+            var minMemType42 = reader.ReadUInt32();
+            var maxMemType42 = reader.ReadUInt32();
+            var minMemType1 = reader.ReadUInt32();
+            var maxMemType1 = reader.ReadUInt32();
 
             //If the version is 1.0 or 3.0, the table ends here. 
 
@@ -109,13 +109,13 @@ namespace Typography.OpenFont.Tables
                         //If you do not want to associate a PostScript name with a particular glyph, use index number 0 which points to the name .notdef.
 
                         _glyphNames = new Dictionary<ushort, string>();
-                        ushort numOfGlyphs = reader.ReadUInt16();
-                        ushort[] glyphNameIndice = Utils.ReadUInt16Array(reader, numOfGlyphs);//***  
-                        string[] stdMacGlyphNames = MacPostFormat1.GetStdMacGlyphNames();
+                        var numOfGlyphs = reader.ReadUInt16();
+                        var glyphNameIndice = Utils.ReadUInt16Array(reader, numOfGlyphs);//***  
+                        var stdMacGlyphNames = MacPostFormat1.GetStdMacGlyphNames();
 
                         for (ushort i = 0; i < numOfGlyphs; ++i)
                         {
-                            ushort glyphNameIndex = glyphNameIndice[i];
+                            var glyphNameIndex = glyphNameIndice[i];
                             if (glyphNameIndex < 258)
                             {
                                 //If the name index is between 0 and 257, treat the name index as a glyph index in the Macintosh standard order.  
@@ -173,7 +173,7 @@ namespace Typography.OpenFont.Tables
                     //_glyphIndiceByName.Add(kp.Value, kp.Key);
                 }
             }
-            _glyphIndiceByName.TryGetValue(glyphName, out ushort found);
+            _glyphIndiceByName.TryGetValue(glyphName, out var found);
             return found;
         }
 

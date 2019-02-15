@@ -17,21 +17,21 @@ namespace Typography.OpenFont
 
         public static string TagToString(uint tag)
         {
-            byte[] bytes = BitConverter.GetBytes(tag);
+            var bytes = BitConverter.GetBytes(tag);
             Array.Reverse(bytes);
             return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
         }
 
         public static int ReadUInt24(BinaryReader reader)
         {
-            byte highByte = reader.ReadByte();
+            var highByte = reader.ReadByte();
             return (highByte << 16) | reader.ReadUInt16();
         }
 
         public static ushort[] ReadUInt16Array(BinaryReader reader, int nRecords)
         {
-            ushort[] arr = new ushort[nRecords];
-            for (int i = 0; i < nRecords; ++i)
+            var arr = new ushort[nRecords];
+            for (var i = 0; i < nRecords; ++i)
             {
                 arr[i] = reader.ReadUInt16();
             }
@@ -39,8 +39,8 @@ namespace Typography.OpenFont
         }
         public static uint[] ReadUInt16ArrayAsUInt32Array(BinaryReader reader, int nRecords)
         {
-            uint[] arr = new uint[nRecords];
-            for (int i = 0; i < nRecords; ++i)
+            var arr = new uint[nRecords];
+            for (var i = 0; i < nRecords; ++i)
             {
                 arr[i] = reader.ReadUInt16();
             }
@@ -48,8 +48,8 @@ namespace Typography.OpenFont
         }
         public static uint[] ReadUInt32Array(BinaryReader reader, int nRecords)
         {
-            uint[] arr = new uint[nRecords];
-            for (int i = 0; i < nRecords; ++i)
+            var arr = new uint[nRecords];
+            for (var i = 0; i < nRecords; ++i)
             {
                 arr[i] = reader.ReadUInt32();
             }
@@ -58,15 +58,15 @@ namespace Typography.OpenFont
 
         public static T[] CloneArray<T>(T[] original, int newArrLenExtend = 0)
         {
-            int orgLen = original.Length;
-            T[] newClone = new T[orgLen + newArrLenExtend];
+            var orgLen = original.Length;
+            var newClone = new T[orgLen + newArrLenExtend];
             Array.Copy(original, newClone, orgLen);
             return newClone;
         }
 
         public static T[] ConcatArray<T>(T[] arr1, T[] arr2)
         {
-            T[] newArr = new T[arr1.Length + arr2.Length];
+            var newArr = new T[arr1.Length + arr2.Length];
             Array.Copy(arr1, 0, newArr, 0, arr1.Length);
             Array.Copy(arr2, 0, newArr, arr1.Length, arr2.Length);
             return newArr;
@@ -88,13 +88,13 @@ namespace Typography.OpenFont
 #if DEBUG
         public static bool dbugIsDiff(GlyphPointF[] set1, GlyphPointF[] set2)
         {
-            int j = set1.Length;
+            var j = set1.Length;
             if (j != set2.Length)
             {
                 //yes, diff
                 return true;
             }
-            for (int i = j - 1; i >= 0; --i)
+            for (var i = j - 1; i >= 0; --i)
             {
                 if (!set1[i].dbugIsEqualsWith(set2[i]))
                 {

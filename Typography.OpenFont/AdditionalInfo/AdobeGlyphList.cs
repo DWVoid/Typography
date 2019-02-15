@@ -64,7 +64,7 @@ namespace Typography.OpenFont
                 InitData();
             }
             //
-            s_unicodeScalarValueToGlyphNameDic.TryGetValue(unicodeValue, out string glyphName);
+            s_unicodeScalarValueToGlyphNameDic.TryGetValue(unicodeValue, out var glyphName);
             return glyphName;
         }
         public static int GetUnicodeValueByGlyphName(string glyphName)
@@ -74,14 +74,14 @@ namespace Typography.OpenFont
                 InitData();
             }
             //
-            s_glyphNameToUnicodeScalarValueDic.TryGetValue(glyphName, out int unicodeValue);
+            s_glyphNameToUnicodeScalarValueDic.TryGetValue(glyphName, out var unicodeValue);
             return unicodeValue;
         }
         static void InitData()
         {
-            using (StringReader strReader = new StringReader(glyphListTxt))
+            using (var strReader = new StringReader(glyphListTxt))
             {
-                string line = strReader.ReadLine();
+                var line = strReader.ReadLine();
                 while (line != null)
                 {
                     //parse each line
@@ -94,14 +94,14 @@ namespace Typography.OpenFont
                         continue;
                     }
 
-                    string[] kp = line.Split(';');
+                    var kp = line.Split(';');
                     if (kp.Length == 2)
                     {
                         //
-                        string glyphName = kp[0].Trim();
-                        string[] unicodeParts = kp[1].Trim().Split(' ');
-                        int partCount = unicodeParts.Length;
-                        int unicodeValue = 0;
+                        var glyphName = kp[0].Trim();
+                        var unicodeParts = kp[1].Trim().Split(' ');
+                        var partCount = unicodeParts.Length;
+                        var unicodeValue = 0;
                         switch (partCount)
                         {
                             case 0:

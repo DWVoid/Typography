@@ -83,11 +83,11 @@ namespace Typography.OpenFont.Tables
             //uint16 	LangSysCount 	Number of LangSysRecords for this script-excluding the DefaultLangSys
             //struct 	LangSysRecord[LangSysCount] 	Array of LangSysRecords-listed alphabetically by LangSysTag
             //---------------
-            ScriptTable scriptTable = new ScriptTable();
-            ushort defaultLangSysOffset = reader.ReadUInt16();
-            ushort langSysCount = reader.ReadUInt16();
-            LangSysTable[] langSysTables = scriptTable.langSysTables = new LangSysTable[langSysCount];
-            for (int i = 0; i < langSysCount; ++i)
+            var scriptTable = new ScriptTable();
+            var defaultLangSysOffset = reader.ReadUInt16();
+            var langSysCount = reader.ReadUInt16();
+            var langSysTables = scriptTable.langSysTables = new LangSysTable[langSysCount];
+            for (var i = 0; i < langSysCount; ++i)
             {
                 //-----------------------
                 //LangSysRecord
@@ -112,9 +112,9 @@ namespace Typography.OpenFont.Tables
 
             //-----------
             //read actual content of each table
-            for (int i = 0; i < langSysCount; ++i)
+            for (var i = 0; i < langSysCount; ++i)
             {
-                LangSysTable langSysTable = langSysTables[i];
+                var langSysTable = langSysTables[i];
                 reader.BaseStream.Seek(beginAt + langSysTable.offset, SeekOrigin.Begin);
                 langSysTable.ReadFrom(reader);
             }
@@ -158,9 +158,9 @@ namespace Typography.OpenFont.Tables
                 //uint16 	FeatureCount 	Number of FeatureIndex values for this language system-excludes the required feature
                 //uint16 	FeatureIndex[FeatureCount] 	Array of indices into the FeatureList-in arbitrary order
                 //---------------------
-                ushort lookupOrder = reader.ReadUInt16();//reserve
+                var lookupOrder = reader.ReadUInt16();//reserve
                 RequireFeatureIndex = reader.ReadUInt16();
-                ushort featureCount = reader.ReadUInt16();
+                var featureCount = reader.ReadUInt16();
                 featureIndexList = Utils.ReadUInt16Array(reader, featureCount);
 
             }

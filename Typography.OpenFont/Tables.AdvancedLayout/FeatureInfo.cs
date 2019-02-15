@@ -166,20 +166,20 @@ namespace Typography.OpenFont
         {
 
             //
-            for (int i = 1; i < 9; ++i)
+            for (var i = 1; i < 9; ++i)
             {
                 _("cv0" + i, "Character Variants" + i);
             }
-            for (int i = 10; i < 100; ++i)
+            for (var i = 10; i < 100; ++i)
             {
                 _("cv" + i, "Character Variants" + i);
             }
             //
-            for (int i = 1; i < 9; ++i)
+            for (var i = 1; i < 9; ++i)
             {
                 _("ss0" + i, "Stylistic Set " + i);
             }
-            for (int i = 10; i < 21; ++i)
+            for (var i = 10; i < 21; ++i)
             {
                 _("ss" + i, "Stylistic Set " + i);
             }

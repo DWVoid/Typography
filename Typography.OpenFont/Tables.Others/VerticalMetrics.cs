@@ -67,8 +67,8 @@ namespace Typography.OpenFont.Tables
         protected override void ReadContentFrom(BinaryReader reader)
         {
             _advHeightAndTopSideBearings = new AdvanceHeightAndTopSideBearing[_numOfLongVerMetrics];
-            int m = 0;
-            for (int i = _numOfLongVerMetrics - 1; i >= 0; --i)
+            var m = 0;
+            for (var i = _numOfLongVerMetrics - 1; i >= 0; --i)
             {
                 _advHeightAndTopSideBearings[m] = new AdvanceHeightAndTopSideBearing(
                     reader.ReadUInt16(),

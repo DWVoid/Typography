@@ -546,8 +546,8 @@ namespace Typography.OpenFont.Tables
 
         public static MathValueRecord[] ReadMathValueRecords(this BinaryReader reader, int count)
         {
-            MathValueRecord[] records = new MathValueRecord[count];
-            for (int i = 0; i < count; ++i)
+            var records = new MathValueRecord[count];
+            for (var i = 0; i < count; ++i)
             {
                 records[i] = reader.ReadMathValueRecord();
             }
@@ -567,23 +567,23 @@ namespace Typography.OpenFont.Tables
             //expand math info to each glyph in typeface
 
             typeface._mathTable = mathTable;
-            Glyph[] allGlyphs = typeface.GetRawGlyphList();
+            var allGlyphs = typeface.GetRawGlyphList();
 
             //expand all information to the glyph 
-            int glyphCount = allGlyphs.Length;
-            MathGlyphInfo[] mathGlyphInfos = new MathGlyphInfo[glyphCount];
+            var glyphCount = allGlyphs.Length;
+            var mathGlyphInfos = new MathGlyphInfo[glyphCount];
             typeface._mathGlyphInfos = mathGlyphInfos;
 
-            int index = 0;
+            var index = 0;
             //-----------------
             //2. MathGlyphInfo
             //-----------------
             {    //2.1 expand italic correction
-                MathItalicsCorrectonInfoTable italicCorrection = mathTable._mathItalicCorrectionInfo;
+                var italicCorrection = mathTable._mathItalicCorrectionInfo;
                 index = 0; //reset
                 if (italicCorrection.CoverageTable != null)
                 {
-                    foreach (ushort glyphIndex in italicCorrection.CoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in italicCorrection.CoverageTable.GetExpandedValueIter())
                     {
                         GetMathGlyphOrCreateNew(mathGlyphInfos, glyphIndex).ItalicCorrection = italicCorrection.ItalicCorrections[index];
                         index++;
@@ -593,11 +593,11 @@ namespace Typography.OpenFont.Tables
             //--------
             {
                 //2.2 expand top accent
-                MathTopAccentAttachmentTable topAccentAttachment = mathTable._mathTopAccentAttachmentTable;
+                var topAccentAttachment = mathTable._mathTopAccentAttachmentTable;
                 index = 0; //reset
                 if (topAccentAttachment.CoverageTable != null)
                 {
-                    foreach (ushort glyphIndex in topAccentAttachment.CoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in topAccentAttachment.CoverageTable.GetExpandedValueIter())
                     {
                         GetMathGlyphOrCreateNew(mathGlyphInfos, glyphIndex).TopAccentAttachment = topAccentAttachment.TopAccentAttachment[index];
                         index++;
@@ -610,7 +610,7 @@ namespace Typography.OpenFont.Tables
                 index = 0; //reset
                 if (mathTable._extendedShapeCoverageTable != null)
                 {
-                    foreach (ushort glyphIndex in mathTable._extendedShapeCoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in mathTable._extendedShapeCoverageTable.GetExpandedValueIter())
                     {
                         GetMathGlyphOrCreateNew(mathGlyphInfos, glyphIndex).IsShapeExtensible = true;
                         index++;
@@ -623,8 +623,8 @@ namespace Typography.OpenFont.Tables
                 index = 0; //reset
                 if (mathTable._mathKernInfoCoverage != null)
                 {
-                    MathKernInfoRecord[] kernRecs = mathTable._mathKernInfoRecords;
-                    foreach (ushort glyphIndex in mathTable._mathKernInfoCoverage.GetExpandedValueIter())
+                    var kernRecs = mathTable._mathKernInfoRecords;
+                    foreach (var glyphIndex in mathTable._mathKernInfoCoverage.GetExpandedValueIter())
                     {
                         GetMathGlyphOrCreateNew(mathGlyphInfos, glyphIndex).SetMathKerns(kernRecs[index]);
                         index++;
@@ -636,11 +636,11 @@ namespace Typography.OpenFont.Tables
             //-----------------
             {
 
-                MathVariantsTable mathVariants = mathTable._mathVariantsTable;
+                var mathVariants = mathTable._mathVariantsTable;
 
                 //3.1  vertical
                 index = 0; //reset
-                foreach (ushort glyphIndex in mathVariants.vertCoverage.GetExpandedValueIter())
+                foreach (var glyphIndex in mathVariants.vertCoverage.GetExpandedValueIter())
                 {
                     GetMathGlyphOrCreateNew(mathGlyphInfos, glyphIndex).VertGlyphConstruction = mathVariants.vertConstructionTables[index];
                     index++;
@@ -650,7 +650,7 @@ namespace Typography.OpenFont.Tables
                 index = 0;//reset
                 if (mathVariants.horizCoverage != null)
                 {
-                    foreach (ushort glyphIndex in mathVariants.horizCoverage.GetExpandedValueIter())
+                    foreach (var glyphIndex in mathVariants.horizCoverage.GetExpandedValueIter())
                     {
                         GetMathGlyphOrCreateNew(mathGlyphInfos, glyphIndex).HoriGlyphConstruction = mathVariants.horizConstructionTables[index];
                         index++;
@@ -660,7 +660,7 @@ namespace Typography.OpenFont.Tables
 
             //-------
             //fill to original glyph?
-            for (int n = allGlyphs.Length - 1; n >= 0; --n)
+            for (var n = allGlyphs.Length - 1; n >= 0; --n)
             {
                 allGlyphs[n].MathGlyphInfo = mathGlyphInfos[n];
             }
@@ -682,7 +682,7 @@ namespace Typography.OpenFont.Tables
         {
             //eg. latin-modern-math-regular.otf, asana-math.otf
 
-            long beginAt = reader.BaseStream.Position;
+            var beginAt = reader.BaseStream.Position;
             //math table header
             //Type          Name    Description
             //uint16        MajorVersion Major version of the MATH table, = 1.
@@ -691,11 +691,11 @@ namespace Typography.OpenFont.Tables
             //Offset16      MathGlyphInfo   Offset to MathGlyphInfo table -from the beginning of MATH table.
             //Offset16      MathVariants    Offset to MathVariants table -from the beginning of MATH table.
 
-            ushort majorVersion = reader.ReadUInt16();
-            ushort minorVersion = reader.ReadUInt16();
-            ushort mathConstants_offset = reader.ReadUInt16();
-            ushort mathGlyphInfo_offset = reader.ReadUInt16();
-            ushort mathVariants_offset = reader.ReadUInt16();
+            var majorVersion = reader.ReadUInt16();
+            var minorVersion = reader.ReadUInt16();
+            var mathConstants_offset = reader.ReadUInt16();
+            var mathGlyphInfo_offset = reader.ReadUInt16();
+            var mathVariants_offset = reader.ReadUInt16();
             //---------------------------------
 
             //(1)
@@ -727,7 +727,7 @@ namespace Typography.OpenFont.Tables
             //The table also contains general use constants that may affect all parts of the formula,
             //such as axis height and math leading.Note that most of the constants deal with the vertical positioning.
 
-            MathConstants mc = new MathConstants();
+            var mc = new MathConstants();
             mc.ScriptPercentScaleDown = reader.ReadInt16();
             mc.ScriptScriptPercentScaleDown = reader.ReadInt16();
             mc.DelimitedSubFormulaMinHeight = reader.ReadUInt16();
@@ -833,11 +833,11 @@ namespace Typography.OpenFont.Tables
 
             //  NOTE: Here, and elsewhere in the subclause – please refer to subclause 6.2.4 "Features and Lookups" for description of the coverage table formats.
 
-            long startAt = reader.BaseStream.Position;
-            ushort offsetTo_MathItalicsCorrectionInfo_Table = reader.ReadUInt16();
-            ushort offsetTo_MathTopAccentAttachment_Table = reader.ReadUInt16();
-            ushort offsetTo_Extended_Shape_coverage_Table = reader.ReadUInt16();
-            ushort offsetTo_MathKernInfo_Table = reader.ReadUInt16();
+            var startAt = reader.BaseStream.Position;
+            var offsetTo_MathItalicsCorrectionInfo_Table = reader.ReadUInt16();
+            var offsetTo_MathTopAccentAttachment_Table = reader.ReadUInt16();
+            var offsetTo_Extended_Shape_coverage_Table = reader.ReadUInt16();
+            var offsetTo_MathKernInfo_Table = reader.ReadUInt16();
             //-----------------------
 
             //(2.1)
@@ -889,15 +889,15 @@ namespace Typography.OpenFont.Tables
         /// <param name="reader"></param>
         void ReadMathItalicCorrectionInfoTable(BinaryReader reader)
         {
-            long beginAt = reader.BaseStream.Position;
+            var beginAt = reader.BaseStream.Position;
             _mathItalicCorrectionInfo = new MathItalicsCorrectonInfoTable();
             //MathItalicsCorrectionInfo Table
             //Type           Name                           Description
             //Offset16       Coverage                       Offset to Coverage table - from the beginning of MathItalicsCorrectionInfo table.
             //uint16         ItalicsCorrectionCount         Number of italics correction values.Should coincide with the number of covered glyphs.
             //MathValueRecord ItalicsCorrection[ItalicsCorrectionCount]  Array of MathValueRecords defining italics correction values for each covered glyph. 
-            ushort coverageOffset = reader.ReadUInt16();
-            ushort italicCorrectionCount = reader.ReadUInt16();
+            var coverageOffset = reader.ReadUInt16();
+            var italicCorrectionCount = reader.ReadUInt16();
             _mathItalicCorrectionInfo.ItalicCorrections = reader.ReadMathValueRecords(italicCorrectionCount);
             //read coverage ...
             if (coverageOffset > 0)
@@ -934,11 +934,11 @@ namespace Typography.OpenFont.Tables
             //MathValueRecord TopAccentAttachment[TopAccentAttachmentCount]  Array of MathValueRecords defining top accent attachment points for each covered glyph.
 
 
-            long beginAt = reader.BaseStream.Position;
+            var beginAt = reader.BaseStream.Position;
             _mathTopAccentAttachmentTable = new MathTopAccentAttachmentTable();
 
-            ushort coverageOffset = reader.ReadUInt16();
-            ushort topAccentAttachmentCount = reader.ReadUInt16();
+            var coverageOffset = reader.ReadUInt16();
+            var topAccentAttachmentCount = reader.ReadUInt16();
             _mathTopAccentAttachmentTable.TopAccentAttachment = reader.ReadMathValueRecords(topAccentAttachmentCount);
             if (coverageOffset > 0)
             {
@@ -986,10 +986,10 @@ namespace Typography.OpenFont.Tables
             //...
             //Each MathKernInfoRecord points to up to four kern tables for each of the corners around the glyph.
 
-            long beginAt = reader.BaseStream.Position;
+            var beginAt = reader.BaseStream.Position;
 
-            ushort mathKernCoverage_offset = reader.ReadUInt16();
-            ushort mathKernCount = reader.ReadUInt16();
+            var mathKernCoverage_offset = reader.ReadUInt16();
+            var mathKernCount = reader.ReadUInt16();
 
 
             //MathKernInfoRecord Table 
@@ -1002,14 +1002,14 @@ namespace Typography.OpenFont.Tables
             //    //Offset16  BottomRightMathKern Offset to MathKern table for bottom right corner - from the beginning of MathKernInfo table. May be NULL.
             //    //Offset16  BottomLeftMathKern  Offset to MathKern table for bottom left corner - from the beginning of MathKernInfo table. May be NULL.
 
-            ushort[] allKernRecOffset = Utils.ReadUInt16Array(reader, 4 * mathKernCount);//*** 
+            var allKernRecOffset = Utils.ReadUInt16Array(reader, 4 * mathKernCount);//*** 
 
             //read each kern table  
             _mathKernInfoRecords = new MathKernInfoRecord[mathKernCount];
-            int index = 0;
+            var index = 0;
             ushort m_kern_offset = 0;
 
-            for (int i = 0; i < mathKernCount; ++i)
+            for (var i = 0; i < mathKernCount; ++i)
             {
 
                 //top-right
@@ -1080,7 +1080,7 @@ namespace Typography.OpenFont.Tables
             //Last value is the value to be applied for all heights greater than the last height in this table.
             //Negative values are interpreted as "move glyphs closer to each other".
 
-            ushort heightCount = reader.ReadUInt16();
+            var heightCount = reader.ReadUInt16();
             return new MathKern(heightCount,
                 reader.ReadMathValueRecords(heightCount),
                 reader.ReadMathValueRecords(heightCount + 1)
@@ -1140,16 +1140,16 @@ namespace Typography.OpenFont.Tables
 
             _mathVariantsTable = new MathVariantsTable();
 
-            long beginAt = reader.BaseStream.Position;
+            var beginAt = reader.BaseStream.Position;
             //
             _mathVariantsTable.MinConnectorOverlap = reader.ReadUInt16();
             //
-            ushort vertGlyphCoverageOffset = reader.ReadUInt16();
-            ushort horizGlyphCoverageOffset = reader.ReadUInt16();
-            ushort vertGlyphCount = reader.ReadUInt16();
-            ushort horizGlyphCount = reader.ReadUInt16();
-            ushort[] vertGlyphConstructions = Utils.ReadUInt16Array(reader, vertGlyphCount);
-            ushort[] horizonGlyphConstructions = Utils.ReadUInt16Array(reader, horizGlyphCount);
+            var vertGlyphCoverageOffset = reader.ReadUInt16();
+            var horizGlyphCoverageOffset = reader.ReadUInt16();
+            var vertGlyphCount = reader.ReadUInt16();
+            var horizGlyphCount = reader.ReadUInt16();
+            var vertGlyphConstructions = Utils.ReadUInt16Array(reader, vertGlyphCount);
+            var horizonGlyphConstructions = Utils.ReadUInt16Array(reader, horizGlyphCount);
             //
 
             _mathVariantsTable.vertCoverage = CoverageTable.CreateFrom(reader, beginAt + vertGlyphCoverageOffset);
@@ -1164,7 +1164,7 @@ namespace Typography.OpenFont.Tables
             //(3.1)
             //vertical
             var vertGlyphConstructionTables = _mathVariantsTable.vertConstructionTables = new MathGlyphConstruction[vertGlyphCount];
-            for (int i = 0; i < vertGlyphCount; ++i)
+            for (var i = 0; i < vertGlyphCount; ++i)
             {
                 reader.BaseStream.Position = beginAt + vertGlyphConstructions[i];
                 vertGlyphConstructionTables[i] = ReadMathGlyphConstructionTable(reader);
@@ -1173,7 +1173,7 @@ namespace Typography.OpenFont.Tables
             //(3.2)
             //horizon
             var horizGlyphConstructionTables = _mathVariantsTable.horizConstructionTables = new MathGlyphConstruction[horizGlyphCount];
-            for (int i = 0; i < horizGlyphCount; ++i)
+            for (var i = 0; i < horizGlyphCount; ++i)
             {
                 reader.BaseStream.Position = beginAt + horizonGlyphConstructions[i];
                 horizGlyphConstructionTables[i] = ReadMathGlyphConstructionTable(reader);
@@ -1215,16 +1215,16 @@ namespace Typography.OpenFont.Tables
             //uint16        VariantCount    Count of glyph growing variants for this glyph.
             //MathGlyphVariantRecord MathGlyphVariantRecord [VariantCount]   MathGlyphVariantRecords for alternative variants of the glyphs.
 
-            long beginAt = reader.BaseStream.Position;
+            var beginAt = reader.BaseStream.Position;
 
             var glyphConstructionTable = new MathGlyphConstruction();
 
-            ushort glyphAsmOffset = reader.ReadUInt16();
-            ushort variantCount = reader.ReadUInt16();
+            var glyphAsmOffset = reader.ReadUInt16();
+            var variantCount = reader.ReadUInt16();
 
             var variantRecords = glyphConstructionTable.glyphVariantRecords = new MathGlyphVariantRecord[variantCount];
 
-            for (int i = 0; i < variantCount; ++i)
+            for (var i = 0; i < variantCount; ++i)
             {
                 variantRecords[i] = new MathGlyphVariantRecord(
                     reader.ReadUInt16(),
@@ -1270,9 +1270,9 @@ namespace Typography.OpenFont.Tables
 
 
             glyphConstruction.GlyphAsm_ItalicCorrection = reader.ReadMathValueRecord();
-            ushort partCount = reader.ReadUInt16();
+            var partCount = reader.ReadUInt16();
             var partRecords = glyphConstruction.GlyphAsm_GlyphPartRecords = new GlyphPartRecord[partCount];
-            for (int i = 0; i < partCount; ++i)
+            for (var i = 0; i < partCount; ++i)
             {
                 partRecords[i] = new GlyphPartRecord(
                     reader.ReadUInt16(),

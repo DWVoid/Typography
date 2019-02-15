@@ -26,17 +26,17 @@ namespace Typography.OpenFont.Tables
         protected override void ReadContentFrom(BinaryReader reader)
         {
 
-            uint tableOffset = this.Header.Offset;
-            GlyphLocations locations = this.GlyphLocations;
-            int glyphCount = locations.GlyphCount;
+            var tableOffset = this.Header.Offset;
+            var locations = this.GlyphLocations;
+            var glyphCount = locations.GlyphCount;
             _glyphs = new Glyph[glyphCount];
 
-            List<ushort> compositeGlyphs = new List<ushort>();
+            var compositeGlyphs = new List<ushort>();
 
-            for (int i = 0; i < glyphCount; i++)
+            for (var i = 0; i < glyphCount; i++)
             {
                 reader.BaseStream.Seek(tableOffset + locations.Offsets[i], SeekOrigin.Begin);//reset                  
-                uint length = locations.Offsets[i + 1] - locations.Offsets[i];
+                var length = locations.Offsets[i + 1] - locations.Offsets[i];
                 if (length > 0)
                 {
                     //https://www.microsoft.com/typography/OTSPEC/glyf.htm
@@ -47,10 +47,10 @@ namespace Typography.OpenFont.Tables
                     //SHORT 	yMin 	Minimum y for coordinate data.
                     //SHORT 	xMax 	Maximum x for coordinate data.
                     //SHORT 	yMax 	Maximum y for coordinate data.
-                    short contoursCount = reader.ReadInt16();
+                    var contoursCount = reader.ReadInt16();
                     if (contoursCount >= 0)
                     {
-                        Bounds bounds = Utils.ReadBounds(reader);
+                        var bounds = Utils.ReadBounds(reader);
                         _glyphs[i] = ReadSimpleGlyph(reader, contoursCount, bounds, (ushort)i);
                     }
                     else
@@ -70,7 +70,7 @@ namespace Typography.OpenFont.Tables
             //resolve composte glyphs 
             //--------------------------------
 
-            foreach (ushort glyphIndex in compositeGlyphs)
+            foreach (var glyphIndex in compositeGlyphs)
             {
 
 #if DEBUG
@@ -96,8 +96,8 @@ namespace Typography.OpenFont.Tables
         static SimpleGlyphFlag[] ReadFlags(BinaryReader input, int flagCount)
         {
             var result = new SimpleGlyphFlag[flagCount];
-            int i = 0;
-            int repeatCount = 0;
+            var i = 0;
+            var repeatCount = 0;
             var flag = (SimpleGlyphFlag)0;
             while (i < flagCount)
             {
@@ -147,13 +147,13 @@ namespace Typography.OpenFont.Tables
             //7  Reserved 	 	This bit is reserved. Set it to zero.
 
             var xs = new short[pointCount];
-            int x = 0;
-            for (int i = 0; i < pointCount; i++)
+            var x = 0;
+            for (var i = 0; i < pointCount; i++)
             {
                 int dx;
                 if (HasFlag(flags[i], isByte))
                 {
-                    byte b = input.ReadByte();
+                    var b = input.ReadByte();
                     dx = HasFlag(flags[i], signOrSame) ? b : -b;
                 }
                 else
@@ -196,22 +196,22 @@ namespace Typography.OpenFont.Tables
             //BYTE or SHORT 	xCoordinates[ ] 	First coordinates relative to (0,0); others are relative to previous point.
             //BYTE or SHORT 	yCoordinates[ ] 	First coordinates relative to (0,0); others are relative to previous point.
 
-            ushort[] endPoints = Utils.ReadUInt16Array(reader, contourCount);
+            var endPoints = Utils.ReadUInt16Array(reader, contourCount);
             //-------------------------------------------------------
-            ushort instructionLen = reader.ReadUInt16();
-            byte[] instructions = reader.ReadBytes(instructionLen);
+            var instructionLen = reader.ReadUInt16();
+            var instructions = reader.ReadBytes(instructionLen);
             //-------------------------------------------------------
             // TODO: should this take the max points rather?
-            int pointCount = endPoints[contourCount - 1] + 1; // TODO: count can be zero?
-            SimpleGlyphFlag[] flags = ReadFlags(reader, pointCount);
-            short[] xs = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlag.XByte, SimpleGlyphFlag.XSignOrSame);
-            short[] ys = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlag.YByte, SimpleGlyphFlag.YSignOrSame);
+            var pointCount = endPoints[contourCount - 1] + 1; // TODO: count can be zero?
+            var flags = ReadFlags(reader, pointCount);
+            var xs = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlag.XByte, SimpleGlyphFlag.XSignOrSame);
+            var ys = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlag.YByte, SimpleGlyphFlag.YSignOrSame);
 
-            int n = xs.Length;
-            GlyphPointF[] glyphPoints = new GlyphPointF[n];
-            for (int i = n - 1; i >= 0; --i)
+            var n = xs.Length;
+            var glyphPoints = new GlyphPointF[n];
+            for (var i = n - 1; i >= 0; --i)
             {
-                bool onCurve = HasFlag(flags[i], SimpleGlyphFlag.OnCurve);
+                var onCurve = HasFlag(flags[i], SimpleGlyphFlag.OnCurve);
                 glyphPoints[i] = new GlyphPointF(xs[i], ys[i], onCurve);
             }
             //-----------
@@ -276,8 +276,8 @@ namespace Typography.OpenFont.Tables
             //move to composite glyph position
             reader.BaseStream.Seek(tableOffset + GlyphLocations.Offsets[compositeGlyphIndex], SeekOrigin.Begin);//reset
             //------------------------
-            short contoursCount = reader.ReadInt16(); // ignored
-            Bounds bounds = Utils.ReadBounds(reader);
+            var contoursCount = reader.ReadInt16(); // ignored
+            var bounds = Utils.ReadBounds(reader);
 
             Glyph finalGlyph = null;
             CompositeGlyphFlags flags;
@@ -285,17 +285,17 @@ namespace Typography.OpenFont.Tables
             do
             {
                 flags = (CompositeGlyphFlags)reader.ReadUInt16();
-                ushort glyphIndex = reader.ReadUInt16();
+                var glyphIndex = reader.ReadUInt16();
                 if (createdGlyphs[glyphIndex] == null)
                 {
                     // This glyph is not read yet, resolve it first!
-                    long storedOffset = reader.BaseStream.Position;
-                    Glyph missingGlyph = ReadCompositeGlyph(createdGlyphs, reader, tableOffset, glyphIndex);
+                    var storedOffset = reader.BaseStream.Position;
+                    var missingGlyph = ReadCompositeGlyph(createdGlyphs, reader, tableOffset, glyphIndex);
                     createdGlyphs[glyphIndex] = missingGlyph;
                     reader.BaseStream.Position = storedOffset;
                 }
 
-                Glyph newGlyph = Glyph.Clone(createdGlyphs[glyphIndex], compositeGlyphIndex);
+                var newGlyph = Glyph.Clone(createdGlyphs[glyphIndex], compositeGlyphIndex);
 
                 short arg1 = 0;
                 short arg2 = 0;
@@ -316,9 +316,9 @@ namespace Typography.OpenFont.Tables
                 float scale10 = 0;
                 float yscale = 1;
 
-                bool useMatrix = false;
+                var useMatrix = false;
                 //-----------------------------------------
-                bool hasScale = false;
+                var hasScale = false;
                 if (HasFlag(flags, CompositeGlyphFlags.WE_HAVE_A_SCALE))
                 {
                     //If the bit WE_HAVE_A_SCALE is set,
@@ -439,8 +439,8 @@ namespace Typography.OpenFont.Tables
             //
             if (HasFlag(flags, CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS))
             {
-                ushort numInstr = reader.ReadUInt16();
-                byte[] insts = reader.ReadBytes(numInstr);
+                var numInstr = reader.ReadUInt16();
+                var insts = reader.ReadBytes(numInstr);
                 finalGlyph.GlyphInstructions = insts;
             }
             //F2DOT14 	16-bit signed fixed number with the low 14 bits of fraction (2.14).

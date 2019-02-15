@@ -63,13 +63,13 @@ namespace Typography.OpenFont
         {
 
             //change data on current glyph
-            GlyphPointF[] glyphPoints = glyph.glyphPoints;
-            for (int i = glyphPoints.Length - 1; i >= 0; --i)
+            var glyphPoints = glyph.glyphPoints;
+            for (var i = glyphPoints.Length - 1; i >= 0; --i)
             {
                 glyphPoints[i] = glyphPoints[i].Offset(dx, dy);
             }
             //-------------------------
-            Bounds orgBounds = glyph._bounds;
+            var orgBounds = glyph._bounds;
             glyph._bounds = new Bounds(
                (short)(orgBounds.XMin + dx),
                (short)(orgBounds.YMin + dy),
@@ -94,12 +94,12 @@ namespace Typography.OpenFont
             float new_ymax = 0;
 
 
-            GlyphPointF[] glyphPoints = glyph.glyphPoints;
-            for (int i = glyphPoints.Length - 1; i >= 0; --i)
+            var glyphPoints = glyph.glyphPoints;
+            for (var i = glyphPoints.Length - 1; i >= 0; --i)
             {
-                GlyphPointF p = glyphPoints[i];
-                float x = p.P.X;
-                float y = p.P.Y;
+                var p = glyphPoints[i];
+                var x = p.P.X;
+                var y = p.P.Y;
 
                 float newX, newY;
                 //please note that this is transform normal***
@@ -152,26 +152,26 @@ namespace Typography.OpenFont
         /// <param name="dest"></param>
         internal static void AppendGlyph(Glyph dest, Glyph src)
         {
-            int org_dest_len = dest._contourEndPoints.Length;
-            int src_contour_count = src._contourEndPoints.Length;
-            ushort org_last_point = (ushort)(dest._contourEndPoints[org_dest_len - 1] + 1); //since start at 0 
+            var org_dest_len = dest._contourEndPoints.Length;
+            var src_contour_count = src._contourEndPoints.Length;
+            var org_last_point = (ushort)(dest._contourEndPoints[org_dest_len - 1] + 1); //since start at 0 
 
             dest.glyphPoints = Utils.ConcatArray(dest.glyphPoints, src.glyphPoints);
             dest._contourEndPoints = Utils.ConcatArray(dest._contourEndPoints, src._contourEndPoints);
 
             //offset latest append contour  end points
-            int newlen = dest._contourEndPoints.Length;
-            for (int i = org_dest_len; i < newlen; ++i)
+            var newlen = dest._contourEndPoints.Length;
+            for (var i = org_dest_len; i < newlen; ++i)
             {
-                dest._contourEndPoints[i] += (ushort)org_last_point;
+                dest._contourEndPoints[i] += org_last_point;
             }
             //calculate new bounds
-            Bounds destBound = dest.Bounds;
-            Bounds srcBound = src.Bounds;
-            short newXmin = (short)Math.Min(destBound.XMin, srcBound.XMin);
-            short newYMin = (short)Math.Min(destBound.YMin, srcBound.YMin);
-            short newXMax = (short)Math.Max(destBound.XMax, srcBound.XMax);
-            short newYMax = (short)Math.Max(destBound.YMax, srcBound.YMax);
+            var destBound = dest.Bounds;
+            var srcBound = src.Bounds;
+            var newXmin = Math.Min(destBound.XMin, srcBound.XMin);
+            var newYMin = Math.Min(destBound.YMin, srcBound.YMin);
+            var newXMax = Math.Max(destBound.XMax, srcBound.XMax);
+            var newYMax = Math.Max(destBound.YMax, srcBound.YMax);
 
             dest._bounds = new Bounds(newXmin, newYMin, newXMax, newYMax);
         }

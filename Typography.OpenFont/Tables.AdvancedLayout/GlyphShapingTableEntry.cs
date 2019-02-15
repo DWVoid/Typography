@@ -65,15 +65,15 @@ namespace Typography.OpenFont.Tables
             // Offset16  LookupList         Offset to LookupList table, from beginning of GPOS/GSUB table
             // Offset32  FeatureVariations  Offset to FeatureVariations table, from beginning of GPOS/GSUB table (may be NULL)
 
-            long tableStartAt = reader.BaseStream.Position;
+            var tableStartAt = reader.BaseStream.Position;
 
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
 
-            ushort scriptListOffset = reader.ReadUInt16(); // from beginning of table
-            ushort featureListOffset = reader.ReadUInt16(); // from beginning of table
-            ushort lookupListOffset = reader.ReadUInt16(); // from beginning of table
-            uint featureVariations = (MinorVersion == 1) ? reader.ReadUInt32() : 0; // from beginning of table
+            var scriptListOffset = reader.ReadUInt16(); // from beginning of table
+            var featureListOffset = reader.ReadUInt16(); // from beginning of table
+            var lookupListOffset = reader.ReadUInt16(); // from beginning of table
+            var featureVariations = (MinorVersion == 1) ? reader.ReadUInt32() : 0; // from beginning of table
 
             //-----------------------
             //1. scriptlist
@@ -169,25 +169,25 @@ namespace Typography.OpenFont.Tables
 
 
             reader.BaseStream.Seek(lookupListBeginAt, SeekOrigin.Begin);
-            ushort lookupCount = reader.ReadUInt16();
-            ushort[] lookupTableOffsets = Utils.ReadUInt16Array(reader, lookupCount);
+            var lookupCount = reader.ReadUInt16();
+            var lookupTableOffsets = Utils.ReadUInt16Array(reader, lookupCount);
 
             //----------------------------------------------
             //load each sub table
             //https://www.microsoft.com/typography/otspec/chapter2.htm
-            foreach (ushort lookupTableOffset in lookupTableOffsets)
+            foreach (var lookupTableOffset in lookupTableOffsets)
             {
-                long lookupTablePos = lookupListBeginAt + lookupTableOffset;
+                var lookupTablePos = lookupListBeginAt + lookupTableOffset;
                 reader.BaseStream.Seek(lookupTablePos, SeekOrigin.Begin);
 
-                ushort lookupType = reader.ReadUInt16(); //Each Lookup table may contain only one type of information (LookupType)
-                ushort lookupFlags = reader.ReadUInt16();
-                ushort subTableCount = reader.ReadUInt16();
+                var lookupType = reader.ReadUInt16(); //Each Lookup table may contain only one type of information (LookupType)
+                var lookupFlags = reader.ReadUInt16();
+                var subTableCount = reader.ReadUInt16();
 
                 //Each LookupType is defined with one or more subtables, and each subtable definition provides a different representation format
-                ushort[] subTableOffsets = Utils.ReadUInt16Array(reader, subTableCount);
+                var subTableOffsets = Utils.ReadUInt16Array(reader, subTableCount);
 
-                ushort markFilteringSet =
+                var markFilteringSet =
                     ((lookupFlags & 0x0010) == 0x0010) ? reader.ReadUInt16() : (ushort)0;
 
                 ReadLookupTable(reader,

@@ -22,9 +22,9 @@ namespace Typography.OpenFont
     {
         public static UnicodeRangeInfo ToUnicodeRangeInfo(this UnicodeLangBits unicodeLangBits)
         {
-            long bits = (long)unicodeLangBits;
-            int bitpos = (int)(bits >> 32);
-            uint lower32 = (uint)(bits & 0xFFFFFFFF);
+            var bits = (long)unicodeLangBits;
+            var bitpos = (int)(bits >> 32);
+            var lower32 = (uint)(bits & 0xFFFFFFFF);
             return new UnicodeRangeInfo(bitpos,
                 (int)(lower32 >> 16),
                  (int)(lower32 & 0xFFFF));
@@ -657,7 +657,7 @@ namespace Typography.OpenFont
             }
             else
             {
-                int internalName = s_registerNames.Count;
+                var internalName = s_registerNames.Count;
                 s_registerNames[shortname] = internalName;
                 var scriptLang = new ScriptLang(fullname, shortname, internalName);
                 s_registeredScriptTags.Add(shortname, scriptLang);
@@ -666,9 +666,9 @@ namespace Typography.OpenFont
 
                 //also register unicode langs with the script lang
 
-                for (int i = langBits.Length - 1; i >= 0; --i)
+                for (var i = langBits.Length - 1; i >= 0; --i)
                 {
-                    UnicodeRangeInfo unicodeRange = langBits[i].ToUnicodeRangeInfo();
+                    var unicodeRange = langBits[i].ToUnicodeRangeInfo();
                     if (!s_unicodeLangToScriptLang.ContainsKey(unicodeRange.StartAt))
                     {
                         s_unicodeLangToScriptLang.Add(unicodeRange.StartAt, new UnicodeRangeMapWithScriptLang(langBits[i], scriptLang));
@@ -732,7 +732,7 @@ namespace Typography.OpenFont
         public static IEnumerable<ScriptLang> GetRegiteredScriptLangIter()
         {
 
-            foreach (ScriptLang scriptLang in s_registeredScriptTags.Values)
+            foreach (var scriptLang in s_registeredScriptTags.Values)
             {
                 yield return scriptLang;
             }

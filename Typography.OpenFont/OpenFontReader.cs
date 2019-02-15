@@ -119,7 +119,7 @@ namespace Typography.OpenFont
             var uniqueNames = new System.Collections.Generic.Dictionary<string, bool>();
             for (uint i = 0; i < members.Length; ++i)
             {
-                PreviewFontInfo member = members[i];
+                var member = members[i];
                 if (!uniqueNames.ContainsKey(member.Name))
                 {
                     uniqueNames.Add(member.Name, true);
@@ -140,35 +140,21 @@ namespace Typography.OpenFont
             //var little = BitConverter.IsLittleEndian;
             using (var input = new ByteOrderSwappingBinaryReader(stream))
             {
-                ushort majorVersion = input.ReadUInt16();
-                ushort minorVersion = input.ReadUInt16();
+                var majorVersion = input.ReadUInt16();
+                var minorVersion = input.ReadUInt16();
 
                 if (KnownFontFiles.IsTtcf(majorVersion, minorVersion))
                 {
                     //this font stream is 'The Font Collection'
-                    FontCollectionHeader ttcHeader = ReadTTCHeader(input);
-                    PreviewFontInfo[] members = new PreviewFontInfo[ttcHeader.numFonts];
+                    var ttcHeader = ReadTTCHeader(input);
+                    var members = new PreviewFontInfo[ttcHeader.numFonts];
                     for (uint i = 0; i < ttcHeader.numFonts; ++i)
                     {
                         input.BaseStream.Seek(ttcHeader.offsetTables[i], SeekOrigin.Begin);
-                        PreviewFontInfo member = members[i] = ReadActualFontPreview(input, false);
+                        var member = members[i] = ReadActualFontPreview(input, false);
                         member.ActualStreamOffset = ttcHeader.offsetTables[i];
                     }
                     return new PreviewFontInfo(BuildTtcfName(members), members);
-                }
-                else if (KnownFontFiles.IsWoff(majorVersion, minorVersion))
-                {
-                    //check if we enable woff or not
-                    WebFont.WoffReader woffReader = new WebFont.WoffReader();
-                    input.BaseStream.Position = 0;
-                    return woffReader.ReadPreview(input);
-                }
-                else if (KnownFontFiles.IsWoff2(majorVersion, minorVersion))
-                {
-                    //check if we enable woff2 or not
-                    WebFont.Woff2Reader woffReader = new WebFont.Woff2Reader();
-                    input.BaseStream.Position = 0;
-                    return woffReader.ReadPreview(input);
                 }
                 else
                 {
@@ -202,8 +188,8 @@ namespace Typography.OpenFont
 
             ttcHeader.majorVersion = input.ReadUInt16();
             ttcHeader.minorVersion = input.ReadUInt16();
-            uint numFonts = input.ReadUInt32();
-            int[] offsetTables = new int[numFonts];
+            var numFonts = input.ReadUInt32();
+            var offsetTables = new int[numFonts];
             for (uint i = 0; i < numFonts; ++i)
             {
                 offsetTables[i] = input.ReadInt32();
@@ -230,17 +216,17 @@ namespace Typography.OpenFont
         {
             if (!skipVersionData)
             {
-                ushort majorVersion = input.ReadUInt16();
-                ushort minorVersion = input.ReadUInt16();
+                var majorVersion = input.ReadUInt16();
+                var minorVersion = input.ReadUInt16();
             }
 
-            ushort tableCount = input.ReadUInt16();
-            ushort searchRange = input.ReadUInt16();
-            ushort entrySelector = input.ReadUInt16();
-            ushort rangeShift = input.ReadUInt16();
+            var tableCount = input.ReadUInt16();
+            var searchRange = input.ReadUInt16();
+            var entrySelector = input.ReadUInt16();
+            var rangeShift = input.ReadUInt16();
 
             var tables = new TableEntryCollection();
-            for (int i = 0; i < tableCount; i++)
+            for (var i = 0; i < tableCount; i++)
             {
                 tables.AddEntry(new UnreadTableEntry(ReadTableHeader(input)));
             }
@@ -257,8 +243,8 @@ namespace Typography.OpenFont
             }
             using (var input = new ByteOrderSwappingBinaryReader(stream))
             {
-                ushort majorVersion = input.ReadUInt16();
-                ushort minorVersion = input.ReadUInt16();
+                var majorVersion = input.ReadUInt16();
+                var minorVersion = input.ReadUInt16();
 
                 if (KnownFontFiles.IsTtcf(majorVersion, minorVersion))
                 {
@@ -268,30 +254,16 @@ namespace Typography.OpenFont
 
                     return null;
                 }
-                else if (KnownFontFiles.IsWoff(majorVersion, minorVersion))
-                {
-                    //check if we enable woff or not
-                    WebFont.WoffReader woffReader = new WebFont.WoffReader();
-                    input.BaseStream.Position = 0;
-                    return woffReader.Read(input);
-                }
-                else if (KnownFontFiles.IsWoff2(majorVersion, minorVersion))
-                {
-                    //check if we enable woff2 or not
-                    WebFont.Woff2Reader woffReader = new WebFont.Woff2Reader();
-                    input.BaseStream.Position = 0;
-                    return woffReader.Read(input);
-                }
                 //-----------------------------------------------------------------
 
 
-                ushort tableCount = input.ReadUInt16();
-                ushort searchRange = input.ReadUInt16();
-                ushort entrySelector = input.ReadUInt16();
-                ushort rangeShift = input.ReadUInt16();
+                var tableCount = input.ReadUInt16();
+                var searchRange = input.ReadUInt16();
+                var entrySelector = input.ReadUInt16();
+                var rangeShift = input.ReadUInt16();
                 //------------------------------------------------------------------ 
                 var tables = new TableEntryCollection();
-                for (int i = 0; i < tableCount; i++)
+                for (var i = 0; i < tableCount; i++)
                 {
                     tables.AddEntry(new UnreadTableEntry(ReadTableHeader(input)));
                 }
@@ -302,8 +274,8 @@ namespace Typography.OpenFont
 
         internal PreviewFontInfo ReadPreviewFontInfo(TableEntryCollection tables, BinaryReader input)
         {
-            NameEntry nameEntry = ReadTableIfExists(tables, input, new NameEntry());
-            OS2Table os2Table = ReadTableIfExists(tables, input, new OS2Table());
+            var nameEntry = ReadTableIfExists(tables, input, new NameEntry());
+            var os2Table = ReadTableIfExists(tables, input, new OS2Table());
 
             return new PreviewFontInfo(
                 nameEntry.FontName,
@@ -315,55 +287,55 @@ namespace Typography.OpenFont
         internal Typeface ReadTableEntryCollection(TableEntryCollection tables, BinaryReader input)
         {
 
-            OS2Table os2Table = ReadTableIfExists(tables, input, new OS2Table());
-            NameEntry nameEntry = ReadTableIfExists(tables, input, new NameEntry());
+            var os2Table = ReadTableIfExists(tables, input, new OS2Table());
+            var nameEntry = ReadTableIfExists(tables, input, new NameEntry());
 
-            Head header = ReadTableIfExists(tables, input, new Head());
-            MaxProfile maximumProfile = ReadTableIfExists(tables, input, new MaxProfile());
-            HorizontalHeader horizontalHeader = ReadTableIfExists(tables, input, new HorizontalHeader());
-            HorizontalMetrics horizontalMetrics = ReadTableIfExists(tables, input, new HorizontalMetrics(horizontalHeader.HorizontalMetricsCount, maximumProfile.GlyphCount));
+            var header = ReadTableIfExists(tables, input, new Head());
+            var maximumProfile = ReadTableIfExists(tables, input, new MaxProfile());
+            var horizontalHeader = ReadTableIfExists(tables, input, new HorizontalHeader());
+            var horizontalMetrics = ReadTableIfExists(tables, input, new HorizontalMetrics(horizontalHeader.HorizontalMetricsCount, maximumProfile.GlyphCount));
 
             //---
-            PostTable postTable = ReadTableIfExists(tables, input, new PostTable());
-            CFFTable ccf = ReadTableIfExists(tables, input, new CFFTable());
+            var postTable = ReadTableIfExists(tables, input, new PostTable());
+            var ccf = ReadTableIfExists(tables, input, new CFFTable());
 
             //--------------
-            Cmap cmaps = ReadTableIfExists(tables, input, new Cmap());
-            GlyphLocations glyphLocations = ReadTableIfExists(tables, input, new GlyphLocations(maximumProfile.GlyphCount, header.WideGlyphLocations));
+            var cmaps = ReadTableIfExists(tables, input, new Cmap());
+            var glyphLocations = ReadTableIfExists(tables, input, new GlyphLocations(maximumProfile.GlyphCount, header.WideGlyphLocations));
 
-            Glyf glyf = ReadTableIfExists(tables, input, new Glyf(glyphLocations));
+            var glyf = ReadTableIfExists(tables, input, new Glyf(glyphLocations));
             //--------------
-            Gasp gaspTable = ReadTableIfExists(tables, input, new Gasp());
-            VerticalDeviceMetrics vdmx = ReadTableIfExists(tables, input, new VerticalDeviceMetrics());
+            var gaspTable = ReadTableIfExists(tables, input, new Gasp());
+            var vdmx = ReadTableIfExists(tables, input, new VerticalDeviceMetrics());
             //--------------
 
 
-            Kern kern = ReadTableIfExists(tables, input, new Kern());
+            var kern = ReadTableIfExists(tables, input, new Kern());
             //--------------
             //advanced typography
-            GDEF gdef = ReadTableIfExists(tables, input, new GDEF());
-            GSUB gsub = ReadTableIfExists(tables, input, new GSUB());
-            GPOS gpos = ReadTableIfExists(tables, input, new GPOS());
-            BASE baseTable = ReadTableIfExists(tables, input, new BASE());
-            COLR colr = ReadTableIfExists(tables, input, new COLR());
-            CPAL cpal = ReadTableIfExists(tables, input, new CPAL());
-            VerticalHeader vhea = ReadTableIfExists(tables, input, new VerticalHeader());
+            var gdef = ReadTableIfExists(tables, input, new GDEF());
+            var gsub = ReadTableIfExists(tables, input, new GSUB());
+            var gpos = ReadTableIfExists(tables, input, new GPOS());
+            var baseTable = ReadTableIfExists(tables, input, new BASE());
+            var colr = ReadTableIfExists(tables, input, new COLR());
+            var cpal = ReadTableIfExists(tables, input, new CPAL());
+            var vhea = ReadTableIfExists(tables, input, new VerticalHeader());
             if (vhea != null)
             {
-                VerticalMetrics vmtx = ReadTableIfExists(tables, input, new VerticalMetrics(vhea.NumOfLongVerMetrics));
+                var vmtx = ReadTableIfExists(tables, input, new VerticalMetrics(vhea.NumOfLongVerMetrics));
             }
 
 
 
             //test math table
-            MathTable mathtable = ReadTableIfExists(tables, input, new MathTable());
-            EBLCTable fontBmpTable = ReadTableIfExists(tables, input, new EBLCTable());
+            var mathtable = ReadTableIfExists(tables, input, new MathTable());
+            var fontBmpTable = ReadTableIfExists(tables, input, new EBLCTable());
             //---------------------------------------------
             //about truetype instruction init 
 
             //--------------------------------------------- 
             Typeface typeface = null;
-            bool isPostScriptOutline = false;
+            var isPostScriptOutline = false;
             if (glyf == null)
             {
                 //check if this is cff table ?
@@ -406,9 +378,9 @@ namespace Typography.OpenFont
 
             if (!isPostScriptOutline)
             {
-                FpgmTable fpgmTable = ReadTableIfExists(tables, input, new FpgmTable());
+                var fpgmTable = ReadTableIfExists(tables, input, new FpgmTable());
                 //control values table
-                CvtTable cvtTable = ReadTableIfExists(tables, input, new CvtTable());
+                var cvtTable = ReadTableIfExists(tables, input, new CvtTable());
                 if (cvtTable != null)
                 {
                     typeface.ControlValues = cvtTable._controlValues;
@@ -417,7 +389,7 @@ namespace Typography.OpenFont
                 {
                     typeface.FpgmProgramBuffer = fpgmTable._programBuffer;
                 }
-                PrepTable propProgramTable = ReadTableIfExists(tables, input, new PrepTable());
+                var propProgramTable = ReadTableIfExists(tables, input, new PrepTable());
                 if (propProgramTable != null)
                 {
                     typeface.PrepProgramBuffer = propProgramTable._programBuffer;
@@ -437,7 +409,7 @@ namespace Typography.OpenFont
 
             //test
             {
-                SvgTable svgTable = ReadTableIfExists(tables, input, new SvgTable());
+                var svgTable = ReadTableIfExists(tables, input, new SvgTable());
                 if (svgTable != null)
                 {
                     typeface._svgTable = svgTable;
@@ -483,7 +455,7 @@ namespace Typography.OpenFont
                 //check if we have read this table or not
                 if (found is UnreadTableEntry)
                 {
-                    UnreadTableEntry unreadTableEntry = found as UnreadTableEntry;
+                    var unreadTableEntry = found as UnreadTableEntry;
 
                     //set header before actal read
                     resultTable.Header = found.Header;

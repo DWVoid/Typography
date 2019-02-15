@@ -33,12 +33,12 @@ namespace Typography.OpenFont.Tables
         {
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
             //----
-            LigCaretList ligcaretList = new LigCaretList();
-            ushort coverageOffset = reader.ReadUInt16();
-            ushort ligGlyphCount = reader.ReadUInt16();
-            ushort[] ligGlyphOffsets = Utils.ReadUInt16Array(reader, ligGlyphCount);
-            LigGlyph[] ligGlyphs = new LigGlyph[ligGlyphCount];
-            for (int i = 0; i < ligGlyphCount; ++i)
+            var ligcaretList = new LigCaretList();
+            var coverageOffset = reader.ReadUInt16();
+            var ligGlyphCount = reader.ReadUInt16();
+            var ligGlyphOffsets = Utils.ReadUInt16Array(reader, ligGlyphCount);
+            var ligGlyphs = new LigGlyph[ligGlyphCount];
+            for (var i = 0; i < ligGlyphCount; ++i)
             {
                 ligGlyphs[i] = LigGlyph.CreateFrom(reader, beginAt + ligGlyphOffsets[i]);
             }
@@ -72,8 +72,8 @@ namespace Typography.OpenFont.Tables
         {
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
             //----------
-            LigGlyph ligGlyph = new LigGlyph();
-            ushort caretCount = reader.ReadUInt16();
+            var ligGlyph = new LigGlyph();
+            var caretCount = reader.ReadUInt16();
             ligGlyph._caretValueOffsets = Utils.ReadUInt16Array(reader, caretCount);
             return ligGlyph;
         }
@@ -199,11 +199,11 @@ namespace Typography.OpenFont.Tables
         {
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
             //
-            MarkGlyphSetsTable markGlyphSetsTable = new MarkGlyphSetsTable();
+            var markGlyphSetsTable = new MarkGlyphSetsTable();
             markGlyphSetsTable._format = reader.ReadUInt16();
-            ushort markSetCount = reader.ReadUInt16();
-            uint[] coverageOffset = markGlyphSetsTable._coverageOffset = new uint[markSetCount];
-            for (int i = 0; i < markSetCount; ++i)
+            var markSetCount = reader.ReadUInt16();
+            var coverageOffset = markGlyphSetsTable._coverageOffset = new uint[markSetCount];
+            for (var i = 0; i < markSetCount; ++i)
             {
                 //Note that the array of offsets for the Coverage tables uses ULONG 
                 coverageOffset[i] = reader.ReadUInt32();//

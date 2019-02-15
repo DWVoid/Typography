@@ -58,8 +58,8 @@ namespace Typography.OpenFont.Tables
             //If the font is monospaced, only one entry need be in the array, 
             //but that entry is required. The last entry applies to all subsequent glyphs
 
-            int numOfHMetrics = _numOfHMetrics;
-            for (int i = 0; i < numOfHMetrics; i++)
+            var numOfHMetrics = _numOfHMetrics;
+            for (var i = 0; i < numOfHMetrics; i++)
             {
                 _advanceWidths.Add(input.ReadUInt16());
                 _leftSideBearings.Add(input.ReadInt16());
@@ -69,11 +69,11 @@ namespace Typography.OpenFont.Tables
             //2. (only) LeftSideBearing:  (same advanced width (eg. monospace font), vary only left side bearing)
             //Here the advanceWidth is assumed to be the same as the advanceWidth for the last entry above.
             //The number of entries in this array is derived from numGlyphs (from 'maxp' table) minus numberOfHMetrics.
-            int numGlyphs = _numGlyphs;
-            int nEntries = numGlyphs - numOfHMetrics;
-            ushort advanceWidth = _advanceWidths[numOfHMetrics - 1];
+            var numGlyphs = _numGlyphs;
+            var nEntries = numGlyphs - numOfHMetrics;
+            var advanceWidth = _advanceWidths[numOfHMetrics - 1];
 
-            for (int i = 0; i < nEntries; i++)
+            for (var i = 0; i < nEntries; i++)
             {
                 _advanceWidths.Add(advanceWidth);
                 _leftSideBearings.Add(input.ReadInt16());

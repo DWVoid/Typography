@@ -39,11 +39,11 @@ namespace Typography.OpenFont.Tables
         protected override void ReadContentFrom(BinaryReader reader)
         {
             // load each strike table
-            int beginPos = (int)reader.BaseStream.Position;
+            var beginPos = (int)reader.BaseStream.Position;
             //
-            ushort versionMajor = reader.ReadUInt16();
-            ushort versionMinor = reader.ReadUInt16();
-            uint numSizes = reader.ReadUInt32();
+            var versionMajor = reader.ReadUInt16();
+            var versionMinor = reader.ReadUInt16();
+            var numSizes = reader.ReadUInt32();
 
             if (numSizes > MAX_BITMAP_STRIKES)
                 throw new Exception("Too many bitmap strikes in font.");
@@ -53,7 +53,7 @@ namespace Typography.OpenFont.Tables
 
 
             //int skipLen = sizeof(uint) + sizeof(ushort) * 2 + 12 * 2;
-            for (int i = 0; i < numSizes; i++)
+            for (var i = 0; i < numSizes; i++)
             {
 
                 //bitmapSizeTable
@@ -89,7 +89,7 @@ namespace Typography.OpenFont.Tables
                 //int8    pad2
 
                 //
-                BitmapSizeTable bmpsizeTable = new BitmapSizeTable();
+                var bmpsizeTable = new BitmapSizeTable();
                 bmpsizeTable.SubTableOffset = reader.ReadUInt32();
                 bmpsizeTable.SubTableSize = reader.ReadUInt32();
                 bmpsizeTable.SubTableCount = reader.ReadUInt32();
@@ -115,7 +115,7 @@ namespace Typography.OpenFont.Tables
 
             // read index subtables
             var indexSubTables = new IndexSubTable[numSizes];
-            for (int i = 0; i < numSizes; i++)
+            for (var i = 0; i < numSizes; i++)
             {
                 reader.BaseStream.Seek(beginPos + sizeTableHeaders[i].SubTableOffset, SeekOrigin.Begin);
                 //--------------------------------------------
@@ -135,7 +135,7 @@ namespace Typography.OpenFont.Tables
             }
 
             // read the actual data for each strike table
-            for (int i = 0; i < numSizes; i++)
+            for (var i = 0; i < numSizes; i++)
             {
                 // read the subtable header
 
@@ -147,9 +147,9 @@ namespace Typography.OpenFont.Tables
                 //uint16        indexFormat     format of this indexSubTable
                 //uint16        imageFormat     format of 'EBDT' image data
                 //Offset32      imageDataOffset offset to image data in 'EBDT' table
-                ushort indexFormat = reader.ReadUInt16();
-                ushort imageFormat = reader.ReadUInt16();
-                uint imageDataOffset = reader.ReadUInt32();
+                var indexFormat = reader.ReadUInt16();
+                var imageFormat = reader.ReadUInt16();
+                var imageDataOffset = reader.ReadUInt32();
                 //There are currently five different formats used for the indexSubTable, 
                 //depending upon the size and type of bitmap data in the glyph code range. 
                 //Apple 'bloc' tables support only formats 1 through 3.

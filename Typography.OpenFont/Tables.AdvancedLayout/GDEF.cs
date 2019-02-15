@@ -106,10 +106,10 @@ namespace Typography.OpenFont.Tables
             this.MajorVersion = reader.ReadUInt16();
             this.MinorVersion = reader.ReadUInt16();
             //
-            ushort glyphClassDefOffset = reader.ReadUInt16();
-            ushort attachListOffset = reader.ReadUInt16();
-            ushort ligCaretListOffset = reader.ReadUInt16();
-            ushort markAttachClassDefOffset = reader.ReadUInt16();
+            var glyphClassDefOffset = reader.ReadUInt16();
+            var attachListOffset = reader.ReadUInt16();
+            var ligCaretListOffset = reader.ReadUInt16();
+            var markAttachClassDefOffset = reader.ReadUInt16();
             ushort markGlyphSetsDefOffset = 0;
             uint itemVarStoreOffset = 0;
             //
@@ -191,7 +191,7 @@ namespace Typography.OpenFont.Tables
         void FillClassDefs(Glyph[] inputGlyphs)
         {
             //1. glyph def 
-            ClassDefTable classDef = GlyphClassDef;
+            var classDef = GlyphClassDef;
             if (classDef == null) return;
             //-----------------------------------------
 
@@ -202,11 +202,11 @@ namespace Typography.OpenFont.Tables
                     break;
                 case 1:
                     {
-                        ushort startGlyph = classDef.startGlyph;
-                        ushort[] classValues = classDef.classValueArray;
-                        int len = classValues.Length;
+                        var startGlyph = classDef.startGlyph;
+                        var classValues = classDef.classValueArray;
+                        var len = classValues.Length;
                         int gIndex = startGlyph;
-                        for (int i = 0; i < len; ++i)
+                        for (var i = 0; i < len; ++i)
                         {
                             inputGlyphs[gIndex].GlyphClass = (GlyphClassKind)classValues[i];
                             gIndex++;
@@ -216,12 +216,12 @@ namespace Typography.OpenFont.Tables
                     break;
                 case 2:
                     {
-                        ClassDefTable.ClassRangeRecord[] records = classDef.records;
-                        int len = records.Length;
-                        for (int n = 0; n < len; ++n)
+                        var records = classDef.records;
+                        var len = records.Length;
+                        for (var n = 0; n < len; ++n)
                         {
-                            ClassDefTable.ClassRangeRecord rec = records[n];
-                            GlyphClassKind glyphKind = (GlyphClassKind)rec.classNo;
+                            var rec = records[n];
+                            var glyphKind = (GlyphClassKind)rec.classNo;
                             for (int i = rec.startGlyphId; i <= rec.endGlyphId; ++i)
                             {
                                 inputGlyphs[i].GlyphClass = glyphKind;
@@ -233,7 +233,7 @@ namespace Typography.OpenFont.Tables
         }
         void FillAttachPoints(Glyph[] inputGlyphs)
         {
-            AttachmentListTable attachmentListTable = this.AttachmentListTable;
+            var attachmentListTable = this.AttachmentListTable;
             if (attachmentListTable == null) { return; }
             //-----------------------------------------
 
@@ -250,7 +250,7 @@ namespace Typography.OpenFont.Tables
             //that can be used in lookup tables within the GSUB or GPOS table to control how mark glyphs within a glyph sequence are treated by lookups.
             //For more information on the use of mark attachment classes, 
             //see the description of lookup flags in the “Lookup Table” section of the chapter, OpenType Layout Common Table Formats.
-            ClassDefTable markAttachmentClassDef = this.MarkAttachmentClassDef;
+            var markAttachmentClassDef = this.MarkAttachmentClassDef;
             if (markAttachmentClassDef == null) return;
             //-----------------------------------------
 
@@ -261,15 +261,15 @@ namespace Typography.OpenFont.Tables
                     break;
                 case 1:
                     {
-                        ushort startGlyph = markAttachmentClassDef.startGlyph;
-                        ushort[] classValues = markAttachmentClassDef.classValueArray;
+                        var startGlyph = markAttachmentClassDef.startGlyph;
+                        var classValues = markAttachmentClassDef.classValueArray;
 
-                        int len = classValues.Length;
+                        var len = classValues.Length;
                         int gIndex = startGlyph;
-                        for (int i = 0; i < len; ++i)
+                        for (var i = 0; i < len; ++i)
                         {
 #if DEBUG
-                            Glyph dbugTestGlyph = inputGlyphs[gIndex];
+                            var dbugTestGlyph = inputGlyphs[gIndex];
 #endif
                             inputGlyphs[gIndex].MarkClassDef = classValues[i];
                             gIndex++;
@@ -279,15 +279,15 @@ namespace Typography.OpenFont.Tables
                     break;
                 case 2:
                     {
-                        ClassDefTable.ClassRangeRecord[] records = markAttachmentClassDef.records;
-                        int len = records.Length;
-                        for (int n = 0; n < len; ++n)
+                        var records = markAttachmentClassDef.records;
+                        var len = records.Length;
+                        for (var n = 0; n < len; ++n)
                         {
-                            ClassDefTable.ClassRangeRecord rec = records[n];
+                            var rec = records[n];
                             for (int i = rec.startGlyphId; i <= rec.endGlyphId; ++i)
                             {
 #if DEBUG
-                                Glyph dbugTestGlyph = inputGlyphs[i];
+                                var dbugTestGlyph = inputGlyphs[i];
 #endif
                                 inputGlyphs[i].MarkClassDef = rec.classNo;
                             }
@@ -302,7 +302,7 @@ namespace Typography.OpenFont.Tables
             //A Mark Glyph Sets table is used to define sets of mark glyphs that can be used in lookup tables within the GSUB or GPOS table to control 
             //how mark glyphs within a glyph sequence are treated by lookups. For more information on the use of mark glyph sets,
             //see the description of lookup flags in the “Lookup Table” section of the chapter, OpenType Layout Common Table Formats.
-            MarkGlyphSetsTable markGlyphSets = this.MarkGlyphSetsTable;
+            var markGlyphSets = this.MarkGlyphSetsTable;
             if (markGlyphSets == null) return;
             //-----------------------------------------
 

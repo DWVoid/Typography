@@ -15,12 +15,12 @@ namespace Typography.OpenFont.Tables
         protected override void ReadContentFrom(BinaryReader reader)
         {
 
-            ushort uFSelector = reader.ReadUInt16();
-            ushort uNRCount = reader.ReadUInt16();
-            ushort uStorageOffset = reader.ReadUInt16();
+            var uFSelector = reader.ReadUInt16();
+            var uNRCount = reader.ReadUInt16();
+            var uStorageOffset = reader.ReadUInt16();
 
-            uint offset = this.Header.Offset;
-            for (int j = 0; j <= uNRCount; j++)
+            var offset = this.Header.Offset;
+            for (var j = 0; j <= uNRCount; j++)
             {
                 var ttRecord = new TT_NAME_RECORD()
                 {
@@ -33,10 +33,10 @@ namespace Typography.OpenFont.Tables
                 };
 
 
-                long nPos = reader.BaseStream.Position;
+                var nPos = reader.BaseStream.Position;
                 reader.BaseStream.Seek(offset + ttRecord.uStringOffset + uStorageOffset, SeekOrigin.Begin);
 
-                byte[] buf = reader.ReadBytes(ttRecord.uStringLength);
+                var buf = reader.ReadBytes(ttRecord.uStringLength);
                 Encoding enc2;
                 if (ttRecord.uEncodingID == 3 || ttRecord.uEncodingID == 1)
                 {
@@ -47,7 +47,7 @@ namespace Typography.OpenFont.Tables
                 {
                     enc2 = Encoding.UTF8;
                 }
-                string strRet = enc2.GetString(buf, 0, buf.Length);
+                var strRet = enc2.GetString(buf, 0, buf.Length);
                 //....
                 switch ((NameIdKind)ttRecord.uNameID)
                 {

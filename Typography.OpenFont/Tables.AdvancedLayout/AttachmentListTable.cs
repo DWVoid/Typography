@@ -33,19 +33,19 @@ namespace Typography.OpenFont.Tables
         public CoverageTable CoverageTable { get; private set; }
         public static AttachmentListTable CreateFrom(BinaryReader reader, long beginAt)
         {
-            AttachmentListTable attachmentListTable = new AttachmentListTable();
+            var attachmentListTable = new AttachmentListTable();
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
             //
-            ushort coverageOffset = reader.ReadUInt16();
-            ushort glyphCount = reader.ReadUInt16();
-            ushort[] attachPointOffsets = Utils.ReadUInt16Array(reader, glyphCount);
+            var coverageOffset = reader.ReadUInt16();
+            var glyphCount = reader.ReadUInt16();
+            var attachPointOffsets = Utils.ReadUInt16Array(reader, glyphCount);
             //-----------------------
             attachmentListTable.CoverageTable = CoverageTable.CreateFrom(reader, beginAt + coverageOffset);
             attachmentListTable._attachPoints = new AttachPoint[glyphCount];
-            for (int i = 0; i < glyphCount; ++i)
+            for (var i = 0; i < glyphCount; ++i)
             {
                 reader.BaseStream.Seek(beginAt + attachPointOffsets[i], SeekOrigin.Begin);
-                ushort pointCount = reader.ReadUInt16();
+                var pointCount = reader.ReadUInt16();
                 attachmentListTable._attachPoints[i] = new AttachPoint()
                 {
                     pointIndices = Utils.ReadUInt16Array(reader, pointCount)

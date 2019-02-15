@@ -479,27 +479,27 @@ namespace Typography.OpenFont.CFF
             if (_cachedGlyphDicByName == null)
             {
                 _cachedGlyphDicByName = new Dictionary<string, Glyph>();
-                int j = _glyphs.Length;
-                for (int i = 1; i < j; ++i)
+                var j = _glyphs.Length;
+                for (var i = 1; i < j; ++i)
                 {
-                    Glyph cff1Glyph = _glyphs[i];
+                    var cff1Glyph = _glyphs[i];
                     _cachedGlyphDicByName.Add(cff1Glyph._cff1GlyphData.Name, cff1Glyph);
                 }
             }
 
-            _cachedGlyphDicByName.TryGetValue(name, out Glyph found);
+            _cachedGlyphDicByName.TryGetValue(name, out var found);
             return found;
         }
 
         internal IEnumerable<GlyphNameMap> GetGlyphNameIter()
         {
-            int j = _glyphs.Length;
+            var j = _glyphs.Length;
 #if DEBUG
             if (j > ushort.MaxValue) { throw new NotSupportedException(); }
 #endif
-            for (int i = 1; i < j; ++i)
+            for (var i = 1; i < j; ++i)
             {
-                Glyph cff1Glyph = _glyphs[i];
+                var cff1Glyph = _glyphs[i];
                 yield return new GlyphNameMap((ushort)i, cff1Glyph._cff1GlyphData.Name);
             }
 
@@ -519,7 +519,7 @@ namespace Typography.OpenFont.CFF
 #if DEBUG
         public override string ToString()
         {
-            StringBuilder stbuilder = new StringBuilder();
+            var stbuilder = new StringBuilder();
             stbuilder.Append(GlyphIndex);
             if (Name != null)
             {
@@ -640,16 +640,16 @@ namespace Typography.OpenFont.CFF
             //previous or next name in the INDEX to ensure that all
             //appropriate names are matched. 
 
-            CffIndexOffset[] nameIndexElems = ReadIndexDataOffsets();
+            var nameIndexElems = ReadIndexDataOffsets();
             if (nameIndexElems == null) return;
             //
 
-            int count = nameIndexElems.Length;
-            List<string> fontNames = new List<string>();
-            for (int i = 0; i < count; ++i)
+            var count = nameIndexElems.Length;
+            var fontNames = new List<string>();
+            for (var i = 0; i < count; ++i)
             {
                 //read each FontName or CIDFontName
-                CffIndexOffset indexElem = nameIndexElems[i];
+                var indexElem = nameIndexElems[i];
                 //TODO: review here again, 
                 //check if we need to set _reader.BaseStream.Position or not
                 fontNames.Add(Encoding.UTF8.GetString(_reader.ReadBytes(indexElem.len), 0, indexElem.len));
@@ -681,7 +681,7 @@ namespace Typography.OpenFont.CFF
             //the top-level dictionary of a PostScript font.
             //A font is identified by an entry in the Name INDEX and its data
             //is accessed via the corresponding Top DICT
-            CffIndexOffset[] offsets = ReadIndexDataOffsets();
+            var offsets = ReadIndexDataOffsets();
             //9. Top DICT Data
             //The names of the Top DICT operators shown in 
             //Table 9 are, where possible, the same as the corresponding Type 1 dict key. 
@@ -691,7 +691,7 @@ namespace Typography.OpenFont.CFF
             //been grouped together with the Top DICT operators for
             //simplicity.The keys from the FontInfo dict are indicated in the
             //Default, notes  column of Table 9)
-            int count = offsets.Length;
+            var count = offsets.Length;
             if (count > 1)
             {
                 //temp...
@@ -700,17 +700,17 @@ namespace Typography.OpenFont.CFF
             }
 
             //
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
             {
                 //read DICT data
-                CffIndexOffset offset = offsets[i];
-                List<CffDataDicEntry> dicData = ReadDICTData(offset.len);
+                var offset = offsets[i];
+                var dicData = ReadDICTData(offset.len);
                 _topDic = dicData;
             }
 
 
             //translate top-dic
-            foreach (CffDataDicEntry entry in _topDic)
+            foreach (var entry in _topDic)
             {
                 switch (entry._operator.Name)
                 {
@@ -782,15 +782,15 @@ namespace Typography.OpenFont.CFF
             //INDEX using a value of(SID – nStdStrings) as the index.
 
 
-            CffIndexOffset[] offsets = ReadIndexDataOffsets();
+            var offsets = ReadIndexDataOffsets();
             if (offsets == null) return;
             //
 
-            int count = offsets.Length;
+            var count = offsets.Length;
             _uniqueStringTable = new string[count];
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
             {
-                CffIndexOffset offset = offsets[i];
+                var offset = offsets[i];
                 //TODO: review here again, 
                 //check if we need to set _reader.BaseStream.Position or not 
                 //TODO: Is Charsets.ISO_8859_1 Encoding supported in .netcore 
@@ -831,7 +831,7 @@ namespace Typography.OpenFont.CFF
             //by an empty Global Subrs INDEX.
 
 
-            CffIndexOffset[] offsets = ReadIndexDataOffsets();
+            var offsets = ReadIndexDataOffsets();
             if (offsets == null) return;
 
             //TODO: review here
@@ -854,7 +854,7 @@ namespace Typography.OpenFont.CFF
             //Each encoding is described by a format-type identifier byte
             //followed by format-specific data.Two formats are currently
             //defined as specified in Tables 11(Format 0) and 12(Format 1). 
-            byte format = _reader.ReadByte();
+            var format = _reader.ReadByte();
             switch (format)
             {
                 case 0:
@@ -882,7 +882,7 @@ namespace Typography.OpenFont.CFF
 
             _reader.BaseStream.Position = _cffStartAt + _charsetOffset;
             //TODO: ...
-            byte format = _reader.ReadByte();
+            var format = _reader.ReadByte();
             switch (format)
             {
                 default:
@@ -913,12 +913,12 @@ namespace Typography.OpenFont.CFF
             //one less element in the glyph name array than nGlyphs because 
             //the .notdef glyph name is omitted.)
 
-            Glyph[] cff1Glyphs = _currentCff1Font._glyphs;
-            int nGlyphs = cff1Glyphs.Length;
-            for (int i = 1; i < nGlyphs; ++i)
+            var cff1Glyphs = _currentCff1Font._glyphs;
+            var nGlyphs = cff1Glyphs.Length;
+            for (var i = 1; i < nGlyphs; ++i)
             {
 
-                ushort sid = _reader.ReadUInt16();
+                var sid = _reader.ReadUInt16();
                 if (sid <= Cff1FontSet.N_STD_STRINGS)
                 {
                     //use standard name
@@ -1010,22 +1010,22 @@ namespace Typography.OpenFont.CFF
             //supported by this method. 
 
             _reader.BaseStream.Position = _cffStartAt + _charStringsOffset;
-            CffIndexOffset[] offsets = ReadIndexDataOffsets();
-            int glyphCount = offsets.Length;
+            var offsets = ReadIndexDataOffsets();
+            var glyphCount = offsets.Length;
             //assume Type2
             //TODO: review here 
 
 
-            Glyph[] glyphs = new Glyph[glyphCount];
+            var glyphs = new Glyph[glyphCount];
 
             _currentCff1Font._glyphs = glyphs;
-            Type2CharStringParser type2Parser = new Type2CharStringParser();
+            var type2Parser = new Type2CharStringParser();
 
 
-            for (int i = 0; i < glyphCount; ++i)
+            for (var i = 0; i < glyphCount; ++i)
             {
-                CffIndexOffset offset = offsets[i];
-                byte[] buffer = _reader.ReadBytes(offset.len);
+                var offset = offsets[i];
+                var buffer = _reader.ReadBytes(offset.len);
 #if DEBUG
                 //check
                 if (buffer[offset.len - 1] != 14)
@@ -1036,10 +1036,10 @@ namespace Typography.OpenFont.CFF
 #endif
                 //now we can parse the raw glyph instructions 
 
-                Cff1GlyphData glyphData = new Cff1GlyphData();
+                var glyphData = new Cff1GlyphData();
                 glyphData.GlyphIndex = (ushort)i;
 
-                Type2GlyphInstructionList instList = type2Parser.ParseType2CharString(buffer);
+                var instList = type2Parser.ParseType2CharString(buffer);
                 if (instList != null)
                 {
                     instList.Kind = Type2GlyphInstructionListKind.GlyphDescription;
@@ -1067,7 +1067,7 @@ namespace Typography.OpenFont.CFF
             //so start with 2nd field
 
             int nCodes = _reader.ReadByte();
-            byte[] codes = _reader.ReadBytes(nCodes);
+            var codes = _reader.ReadBytes(nCodes);
 
         }
         void ReadFormat1Encoding()
@@ -1123,13 +1123,13 @@ namespace Typography.OpenFont.CFF
             //interpret the values of private dict
             //
 
-            foreach (CffDataDicEntry dicEntry in _currentCff1Font._privateDict)
+            foreach (var dicEntry in _currentCff1Font._privateDict)
             {
                 switch (dicEntry._operator.Name)
                 {
                     case "Subrs":
                         {
-                            int localSubrsOffset = (int)dicEntry.operands[0]._realNumValue;
+                            var localSubrsOffset = (int)dicEntry.operands[0]._realNumValue;
                             _reader.BaseStream.Position = _cffStartAt + _privateDICTOffset + localSubrsOffset;
                             ReadLocalSubrs();
                         }
@@ -1154,22 +1154,22 @@ namespace Typography.OpenFont.CFF
         void ReadLocalSubrs()
         {
 
-            CffIndexOffset[] offsets = ReadIndexDataOffsets();
+            var offsets = ReadIndexDataOffsets();
             //then read each local subrountine 
 
             //temp 
-            Type2CharStringParser type2Parser = new Type2CharStringParser();
-            int j = offsets.Length;
+            var type2Parser = new Type2CharStringParser();
+            var j = offsets.Length;
 
-            List<Type2GlyphInstructionList> localSubrs = new List<Type2GlyphInstructionList>(j);
+            var localSubrs = new List<Type2GlyphInstructionList>(j);
             _currentCff1Font._localSubrs = localSubrs;
 
-            for (int i = 0; i < j; ++i)
+            for (var i = 0; i < j; ++i)
             {
-                CffIndexOffset offset = offsets[i];
-                byte[] charStringBuffer = _reader.ReadBytes(offset.len);
+                var offset = offsets[i];
+                var charStringBuffer = _reader.ReadBytes(offset.len);
 
-                Type2GlyphInstructionList instList = type2Parser.ParseType2CharString(charStringBuffer);
+                var instList = type2Parser.ParseType2CharString(charStringBuffer);
                 if (instList != null)
                 {
                     instList.Kind = Type2GlyphInstructionListKind.LocalSubroutine;
@@ -1199,11 +1199,11 @@ namespace Typography.OpenFont.CFF
             //-----------------------------
             //A DICT is simply a sequence of 
             //operand(s)/operator bytes concatenated together.  
-            int endBefore = (int)(_reader.BaseStream.Position + len);
-            List<CffDataDicEntry> dicData = new List<CffDataDicEntry>();
+            var endBefore = (int)(_reader.BaseStream.Position + len);
+            var dicData = new List<CffDataDicEntry>();
             while (_reader.BaseStream.Position < endBefore)
             {
-                CffDataDicEntry dicEntry = ReadEntry();
+                var dicEntry = ReadEntry();
                 dicData.Add(dicEntry);
             }
             return dicData;
@@ -1228,12 +1228,12 @@ namespace Typography.OpenFont.CFF
 
             //An operator may be preceded by up to a maximum of 48 operands
 
-            CffDataDicEntry dicEntry = new CffDataDicEntry();
-            List<CffOperand> operands = new List<CffOperand>();
+            var dicEntry = new CffDataDicEntry();
+            var operands = new List<CffOperand>();
 
             while (true)
             {
-                byte b0 = _reader.ReadByte();
+                var b0 = _reader.ReadByte();
 
                 if (b0 >= 0 && b0 <= 21)
                 {
@@ -1243,17 +1243,17 @@ namespace Typography.OpenFont.CFF
                 }
                 else if (b0 == 28 || b0 == 29)
                 {
-                    int num = ReadIntegerNumber(b0);
+                    var num = ReadIntegerNumber(b0);
                     operands.Add(new CffOperand(num, OperandKind.IntNumber));
                 }
                 else if (b0 == 30)
                 {
-                    double num = ReadRealNumber();
+                    var num = ReadRealNumber();
                     operands.Add(new CffOperand(num, OperandKind.RealNumber));
                 }
                 else if (b0 >= 32 && b0 <= 254)
                 {
-                    int num = ReadIntegerNumber(b0);
+                    var num = ReadIntegerNumber(b0);
                     operands.Add(new CffOperand(num, OperandKind.IntNumber));
                 }
                 else
@@ -1292,21 +1292,21 @@ namespace Typography.OpenFont.CFF
             //pair is stored in the most significant 4 bits of a byte and the
             //second nibble of a pair is stored in the least significant 4 bits of a byte
 
-            StringBuilder sb = _sbForReadRealNumber;
+            var sb = _sbForReadRealNumber;
             sb.Length = 0;//reset
 
-            bool done = false;
-            bool exponentMissing = false;
+            var done = false;
+            var exponentMissing = false;
             while (!done)
             {
                 int b = _reader.ReadByte();
 
-                int nb_0 = (b >> 4) & 0xf;
-                int nb_1 = (b) & 0xf;
+                var nb_0 = (b >> 4) & 0xf;
+                var nb_1 = (b) & 0xf;
 
-                for (int i = 0; !done && i < 2; ++i)
+                for (var i = 0; !done && i < 2; ++i)
                 {
-                    int nibble = (i == 0) ? nb_0 : nb_1;
+                    var nibble = (i == 0) ? nb_0 : nb_1;
 
                     switch (nibble)
                     {
@@ -1364,7 +1364,7 @@ namespace Typography.OpenFont.CFF
 
             if (!double.TryParse(sb.ToString(),
                 System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.AllowExponent,
-                System.Globalization.CultureInfo.InvariantCulture, out double value))
+                System.Globalization.CultureInfo.InvariantCulture, out var value))
             {
                 throw new NotSupportedException();
             }
@@ -1441,20 +1441,20 @@ namespace Typography.OpenFont.CFF
             //element of the offset array
 
 
-            ushort count = _reader.ReadUInt16();
+            var count = _reader.ReadUInt16();
             if (count == 0)
             {
                 return null;
             }
 
             int offSize = _reader.ReadByte(); //
-            int[] offsets = new int[count + 1];
-            CffIndexOffset[] indexElems = new CffIndexOffset[count];
-            for (int i = 0; i <= count; ++i)
+            var offsets = new int[count + 1];
+            var indexElems = new CffIndexOffset[count];
+            for (var i = 0; i <= count; ++i)
             {
                 offsets[i] = _reader.ReadOffset(offSize);
             }
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
             {
                 indexElems[i] = new CffIndexOffset(offsets[i], offsets[i + 1] - offsets[i]);
             }
@@ -1516,9 +1516,9 @@ namespace Typography.OpenFont.CFF
         public override string ToString()
         {
 
-            StringBuilder stbuilder = new StringBuilder();
-            int j = operands.Length;
-            for (int i = 0; i < j; ++i)
+            var stbuilder = new StringBuilder();
+            var j = operands.Length;
+            for (var i = 0; i < j; ++i)
             {
                 if (i > 0)
                 {
@@ -1600,7 +1600,7 @@ namespace Typography.OpenFont.CFF
 
         public static CFFOperator GetOperatorByKey(byte b0, byte b1)
         {
-            s_registered_Operators.TryGetValue((b1 << 8) | b0, out CFFOperator found);
+            s_registered_Operators.TryGetValue((b1 << 8) | b0, out var found);
             return found;
         }
 

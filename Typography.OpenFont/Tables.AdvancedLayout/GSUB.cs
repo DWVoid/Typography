@@ -40,10 +40,10 @@ namespace Typography.OpenFont.Tables
                                                 ushort lookupType, ushort lookupFlags,
                                                 ushort[] subTableOffsets, ushort markFilteringSet)
         {
-            LookupTable lookupTable = new LookupTable(lookupType, lookupFlags, markFilteringSet);
+            var lookupTable = new LookupTable(lookupType, lookupFlags, markFilteringSet);
             foreach (long subTableOffset in subTableOffsets)
             {
-                LookupSubTable subTable = lookupTable.ReadSubTable(reader, lookupTablePos + subTableOffset); 
+                var subTable = lookupTable.ReadSubTable(reader, lookupTablePos + subTableOffset); 
                 subTable.OwnerGSub = this;
                 lookupTable.SubTables.Add(subTable); 
             }
@@ -130,7 +130,7 @@ namespace Typography.OpenFont.Tables
             //
             public bool DoSubstitutionAt(IGlyphIndexList inputGlyphs, int pos, int len)
             {
-                foreach (LookupSubTable subTable in SubTables)
+                foreach (var subTable in SubTables)
                 {
                     // We return after the first substitution, as explained in the spec:
                     // "A lookup is finished for a glyph after the client locates the target
@@ -152,7 +152,7 @@ namespace Typography.OpenFont.Tables
                 //we may miss some glyph that is needed for substitution process.
                 //                
                 //so, we collect it here, based on current script lang.
-                foreach (LookupSubTable subTable in SubTables)
+                foreach (var subTable in SubTables)
                 {
                     subTable.CollectAssociatedSubtitutionGlyphs(outputAssocGlyphs);
                 }
@@ -200,7 +200,7 @@ namespace Typography.OpenFont.Tables
 
                 public override bool DoSubstitutionAt(IGlyphIndexList glyphIndices, int pos, int len)
                 {
-                    ushort glyphIndex = glyphIndices[pos];
+                    var glyphIndex = glyphIndices[pos];
                     if (CoverageTable.FindPosition(glyphIndex) > -1)
                     {
                         glyphIndices.Replace(pos, (ushort)(glyphIndex + DeltaGlyph));
@@ -211,7 +211,7 @@ namespace Typography.OpenFont.Tables
                 public override void CollectAssociatedSubtitutionGlyphs(List<ushort> outputAssocGlyphs)
                 {
                     //1. iterate glyphs from CoverageTable                    
-                    foreach (ushort glyphIndex in CoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in CoverageTable.GetExpandedValueIter())
                     {
                         //2. add substitution glyph
                         outputAssocGlyphs.Add((ushort)(glyphIndex + DeltaGlyph));
@@ -235,7 +235,7 @@ namespace Typography.OpenFont.Tables
                 public CoverageTable CoverageTable { get; private set; }
                 public override bool DoSubstitutionAt(IGlyphIndexList glyphIndices, int pos, int len)
                 {
-                    int foundAt = CoverageTable.FindPosition(glyphIndices[pos]);
+                    var foundAt = CoverageTable.FindPosition(glyphIndices[pos]);
                     if (foundAt > -1)
                     {
                         glyphIndices.Replace(pos, SubstituteGlyphs[foundAt]);
@@ -246,11 +246,11 @@ namespace Typography.OpenFont.Tables
 
                 public override void CollectAssociatedSubtitutionGlyphs(List<ushort> outputAssocGlyphs)
                 {
-                    foreach (ushort glyphIndex in CoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in CoverageTable.GetExpandedValueIter())
                     {
                         //2. add substitution glyph
-                        int foundAt = CoverageTable.FindPosition(glyphIndex);
-                        outputAssocGlyphs.Add((ushort)(SubstituteGlyphs[foundAt]));
+                        var foundAt = CoverageTable.FindPosition(glyphIndex);
+                        outputAssocGlyphs.Add(SubstituteGlyphs[foundAt]);
                     }
                 }
 
@@ -314,22 +314,22 @@ namespace Typography.OpenFont.Tables
 
                 reader.BaseStream.Seek(subTableStartAt, SeekOrigin.Begin);
 
-                ushort format = reader.ReadUInt16();
-                ushort coverage = reader.ReadUInt16();
+                var format = reader.ReadUInt16();
+                var coverage = reader.ReadUInt16();
                 switch (format)
                 {
                     default: throw new NotSupportedException();
                     case 1:
                         {
-                            short deltaGlyph = reader.ReadInt16();
-                            CoverageTable coverageTable = CoverageTable.CreateFrom(reader, subTableStartAt + coverage);
+                            var deltaGlyph = reader.ReadInt16();
+                            var coverageTable = CoverageTable.CreateFrom(reader, subTableStartAt + coverage);
                             return new LkSubTableT1Fmt1(coverageTable, deltaGlyph);
                         }
                     case 2:
                         {
-                            ushort glyphCount = reader.ReadUInt16();
-                            ushort[] substituteGlyphs = Utils.ReadUInt16Array(reader, glyphCount); // 	Array of substitute GlyphIDs-ordered by Coverage Index                                 
-                            CoverageTable coverageTable = CoverageTable.CreateFrom(reader, subTableStartAt + coverage);
+                            var glyphCount = reader.ReadUInt16();
+                            var substituteGlyphs = Utils.ReadUInt16Array(reader, glyphCount); // 	Array of substitute GlyphIDs-ordered by Coverage Index                                 
+                            var coverageTable = CoverageTable.CreateFrom(reader, subTableStartAt + coverage);
                             return new LkSubTableT1Fmt2(coverageTable, substituteGlyphs);
                         }
                 }
@@ -342,13 +342,13 @@ namespace Typography.OpenFont.Tables
                 public SequenceTable[] SeqTables { get; set; }
                 public override bool DoSubstitutionAt(IGlyphIndexList glyphIndices, int pos, int len)
                 {
-                    int foundPos = CoverageTable.FindPosition(glyphIndices[pos]);
+                    var foundPos = CoverageTable.FindPosition(glyphIndices[pos]);
                     if (foundPos > -1)
                     {
-                        SequenceTable seqTable = SeqTables[foundPos];
+                        var seqTable = SeqTables[foundPos];
                         //replace current glyph index with new seq
 #if DEBUG
-                        int new_seqCount = seqTable.substituteGlyphs.Length;
+                        var new_seqCount = seqTable.substituteGlyphs.Length;
 #endif
                         glyphIndices.Replace(pos, seqTable.substituteGlyphs);
                         return true;
@@ -357,9 +357,9 @@ namespace Typography.OpenFont.Tables
                 }
                 public override void CollectAssociatedSubtitutionGlyphs(List<ushort> outputAssocGlyphs)
                 {
-                    foreach (ushort glyphIndex in CoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in CoverageTable.GetExpandedValueIter())
                     {
-                        int pos = CoverageTable.FindPosition(glyphIndex);
+                        var pos = CoverageTable.FindPosition(glyphIndex);
 #if DEBUG
                         if (pos >= SeqTables.Length)
                         {
@@ -421,23 +421,23 @@ namespace Typography.OpenFont.Tables
                 //uint16 	Substitute[GlyphCount]  String of glyph IDs  to substitute
                 //----------------------
                 reader.BaseStream.Seek(subTableStartAt, SeekOrigin.Begin);
-                ushort format = reader.ReadUInt16();
+                var format = reader.ReadUInt16();
                 switch (format)
                 {
                     default: 
                         throw new NotSupportedException();
                     case 1:
                         {
-                            ushort coverageOffset = reader.ReadUInt16();
-                            ushort seqCount = reader.ReadUInt16();
-                            ushort[] seqOffsets = Utils.ReadUInt16Array(reader, seqCount);
+                            var coverageOffset = reader.ReadUInt16();
+                            var seqCount = reader.ReadUInt16();
+                            var seqOffsets = Utils.ReadUInt16Array(reader, seqCount);
 
                             var subTable = new LkSubTableT2();
                             subTable.SeqTables = new SequenceTable[seqCount];
-                            for (int n = 0; n < seqCount; ++n)
+                            for (var n = 0; n < seqCount; ++n)
                             {
                                 reader.BaseStream.Seek(subTableStartAt + seqOffsets[n], SeekOrigin.Begin);
-                                ushort glyphCount = reader.ReadUInt16();
+                                var glyphCount = reader.ReadUInt16();
                                 subTable.SeqTables[n] = new SequenceTable(
                                     Utils.ReadUInt16Array(reader, glyphCount));
                             }
@@ -458,7 +458,7 @@ namespace Typography.OpenFont.Tables
                 public override bool DoSubstitutionAt(IGlyphIndexList glyphIndices, int pos, int len)
                 {
                     //Coverage table containing the indices of glyphs with alternative forms(Coverage),
-                    int iscovered = this.CoverageTable.FindPosition(glyphIndices[pos]);
+                    var iscovered = this.CoverageTable.FindPosition(glyphIndices[pos]);
                     //this.CoverageTable.FindPosition()
                     Utils.WarnUnimplemented("Lookup Subtable Type 3");
                     return false;
@@ -513,20 +513,20 @@ namespace Typography.OpenFont.Tables
 
                 reader.BaseStream.Seek(subTableStartAt, SeekOrigin.Begin);
 
-                ushort format = reader.ReadUInt16(); //The subtable has one format: AlternateSubstFormat1.
+                var format = reader.ReadUInt16(); //The subtable has one format: AlternateSubstFormat1.
                 switch (format)
                 {
                     default: throw new NotSupportedException();
                     case 1:
                         {
-                            ushort coverageOffset = reader.ReadUInt16();
-                            ushort alternativeSetCount = reader.ReadUInt16();
-                            ushort[] alternativeTableOffsets = Utils.ReadUInt16Array(reader, alternativeSetCount);
+                            var coverageOffset = reader.ReadUInt16();
+                            var alternativeSetCount = reader.ReadUInt16();
+                            var alternativeTableOffsets = Utils.ReadUInt16Array(reader, alternativeSetCount);
 
-                            LkSubTableT3 subTable = new LkSubTableT3();
-                            AlternativeSetTable[] alternativeSetTables = new AlternativeSetTable[alternativeSetCount];
+                            var subTable = new LkSubTableT3();
+                            var alternativeSetTables = new AlternativeSetTable[alternativeSetCount];
                             subTable.AlternativeSetTables = alternativeSetTables;
-                            for (int n = 0; n < alternativeSetCount; ++n)
+                            for (var n = 0; n < alternativeSetCount; ++n)
                             {
                                 alternativeSetTables[n] = AlternativeSetTable.CreateFrom(reader, subTableStartAt + alternativeTableOffsets[n]);
                             }
@@ -544,8 +544,8 @@ namespace Typography.OpenFont.Tables
                 {
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                     // 
-                    AlternativeSetTable altTable = new AlternativeSetTable();
-                    ushort glyphCount = reader.ReadUInt16();
+                    var altTable = new AlternativeSetTable();
+                    var glyphCount = reader.ReadUInt16();
                     altTable.alternativeGlyphIds = Utils.ReadUInt16Array(reader, glyphCount);
                     return altTable;
                 }
@@ -559,22 +559,22 @@ namespace Typography.OpenFont.Tables
                 public override bool DoSubstitutionAt(IGlyphIndexList glyphIndices, int pos, int len)
                 {
                     //check coverage
-                    ushort glyphIndex = glyphIndices[pos];
-                    int foundPos = this.CoverageTable.FindPosition(glyphIndex);
+                    var glyphIndex = glyphIndices[pos];
+                    var foundPos = this.CoverageTable.FindPosition(glyphIndex);
                     if (foundPos > -1)
                     {
-                        LigatureSetTable ligTable = LigatureSetTables[foundPos];
-                        foreach (LigatureTable lig in ligTable.Ligatures)
+                        var ligTable = LigatureSetTables[foundPos];
+                        foreach (var lig in ligTable.Ligatures)
                         {
-                            int remainingLen = len - 1;
-                            int compLen = lig.ComponentGlyphs.Length;
+                            var remainingLen = len - 1;
+                            var compLen = lig.ComponentGlyphs.Length;
                             if (compLen > remainingLen)
                             {   // skip tp next component
                                 continue;
                             }
-                            bool allMatched = true;
-                            int tmp_i = pos + 1;
-                            for (int p = 0; p < compLen; ++p)
+                            var allMatched = true;
+                            var tmp_i = pos + 1;
+                            for (var p = 0; p < compLen; ++p)
                             {
                                 if (glyphIndices[tmp_i + p] != lig.ComponentGlyphs[p])
                                 {
@@ -594,11 +594,11 @@ namespace Typography.OpenFont.Tables
                 }
                 public override void CollectAssociatedSubtitutionGlyphs(List<ushort> outputAssocGlyphs)
                 {
-                    foreach (ushort glyphIndex in CoverageTable.GetExpandedValueIter())
+                    foreach (var glyphIndex in CoverageTable.GetExpandedValueIter())
                     {
-                        int foundPos = CoverageTable.FindPosition(glyphIndex);
-                        LigatureSetTable ligTable = LigatureSetTables[foundPos];
-                        foreach (LigatureTable lig in ligTable.Ligatures)
+                        var foundPos = CoverageTable.FindPosition(glyphIndex);
+                        var ligTable = LigatureSetTables[foundPos];
+                        foreach (var lig in ligTable.Ligatures)
                         {
                             outputAssocGlyphs.Add(lig.GlyphId);
                         }
@@ -615,14 +615,14 @@ namespace Typography.OpenFont.Tables
                 public LigatureTable[] Ligatures { get; set; }
                 public static LigatureSetTable CreateFrom(BinaryReader reader, long beginAt)
                 {
-                    LigatureSetTable ligSetTable = new LigatureSetTable();
+                    var ligSetTable = new LigatureSetTable();
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                     //
-                    ushort ligCount = reader.ReadUInt16(); //Number of Ligature tables
-                    ushort[] ligOffsets = Utils.ReadUInt16Array(reader, ligCount);
+                    var ligCount = reader.ReadUInt16(); //Number of Ligature tables
+                    var ligOffsets = Utils.ReadUInt16Array(reader, ligCount);
                     //
-                    LigatureTable[] ligTables = ligSetTable.Ligatures = new LigatureTable[ligCount];
-                    for (int i = 0; i < ligCount; ++i)
+                    var ligTables = ligSetTable.Ligatures = new LigatureTable[ligCount];
+                    for (var i = 0; i < ligCount; ++i)
                     {
                         ligTables[i] = LigatureTable.CreateFrom(reader, beginAt + ligOffsets[i]);
                     }
@@ -647,9 +647,9 @@ namespace Typography.OpenFont.Tables
                 {
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                     // 
-                    LigatureTable ligTable = new LigatureTable();
+                    var ligTable = new LigatureTable();
                     ligTable.GlyphId = reader.ReadUInt16();
-                    ushort compCount = reader.ReadUInt16();
+                    var compCount = reader.ReadUInt16();
                     ligTable.ComponentGlyphs = Utils.ReadUInt16Array(reader, compCount - 1);
                     return ligTable;
                 }
@@ -657,10 +657,10 @@ namespace Typography.OpenFont.Tables
                 public override string ToString()
                 {
                     var stbuilder = new System.Text.StringBuilder();
-                    int j = ComponentGlyphs.Length;
+                    var j = ComponentGlyphs.Length;
                     stbuilder.Append("output:" + GlyphId + ",{");
 
-                    for (int i = 0; i < j; ++i)
+                    for (var i = 0; i < j; ++i)
                     {
                         if (i > 0)
                         {
@@ -741,18 +741,18 @@ namespace Typography.OpenFont.Tables
 
                 reader.BaseStream.Seek(subTableStartAt, SeekOrigin.Begin);
 
-                ushort format = reader.ReadUInt16();
+                var format = reader.ReadUInt16();
                 switch (format)
                 {
                     default: throw new NotSupportedException();
                     case 1:
                         {
-                            ushort coverageOffset = reader.ReadUInt16();
-                            ushort ligSetCount = reader.ReadUInt16();
-                            ushort[] ligSetOffsets = Utils.ReadUInt16Array(reader, ligSetCount);
-                            LkSubTableT4 subTable = new LkSubTableT4();
-                            LigatureSetTable[] ligSetTables = subTable.LigatureSetTables = new LigatureSetTable[ligSetCount];
-                            for (int n = 0; n < ligSetCount; ++n)
+                            var coverageOffset = reader.ReadUInt16();
+                            var ligSetCount = reader.ReadUInt16();
+                            var ligSetOffsets = Utils.ReadUInt16Array(reader, ligSetCount);
+                            var subTable = new LkSubTableT4();
+                            var ligSetTables = subTable.LigatureSetTables = new LigatureSetTable[ligSetCount];
+                            for (var n = 0; n < ligSetCount; ++n)
                             {
                                 ligSetTables[n] = LigatureSetTable.CreateFrom(reader, subTableStartAt + ligSetOffsets[n]);
                             }
@@ -796,11 +796,11 @@ namespace Typography.OpenFont.Tables
                 {
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                     //---
-                    ChainSubRuleSetTable table = new ChainSubRuleSetTable();
-                    ushort subRuleCount = reader.ReadUInt16();
-                    ushort[] subRuleOffsets = Utils.ReadUInt16Array(reader, subRuleCount);
-                    ChainSubRuleSubTable[] chainSubRuleSubTables = table.chainSubRuleSubTables = new ChainSubRuleSubTable[subRuleCount];
-                    for (int i = 0; i < subRuleCount; ++i)
+                    var table = new ChainSubRuleSetTable();
+                    var subRuleCount = reader.ReadUInt16();
+                    var subRuleOffsets = Utils.ReadUInt16Array(reader, subRuleCount);
+                    var chainSubRuleSubTables = table.chainSubRuleSubTables = new ChainSubRuleSubTable[subRuleCount];
+                    for (var i = 0; i < subRuleCount; ++i)
                     {
                         chainSubRuleSubTables[i] = ChainSubRuleSubTable.CreateFrom(reader, beginAt + subRuleOffsets[i]);
                     }
@@ -845,8 +845,8 @@ namespace Typography.OpenFont.Tables
                 }
                 public static SubstLookupRecord[] CreateSubstLookupRecords(BinaryReader reader, ushort ncount)
                 {
-                    SubstLookupRecord[] results = new SubstLookupRecord[ncount];
-                    for (int i = 0; i < ncount; ++i)
+                    var results = new SubstLookupRecord[ncount];
+                    for (var i = 0; i < ncount; ++i)
                     {
                         results[i] = new SubstLookupRecord(reader.ReadUInt16(), reader.ReadUInt16());
                     }
@@ -881,17 +881,17 @@ namespace Typography.OpenFont.Tables
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                     //
                     //------------
-                    ChainSubRuleSubTable subRuleTable = new ChainSubRuleSubTable();
-                    ushort backtrackGlyphCount = reader.ReadUInt16();
+                    var subRuleTable = new ChainSubRuleSubTable();
+                    var backtrackGlyphCount = reader.ReadUInt16();
                     subRuleTable.backTrackingGlyphs = Utils.ReadUInt16Array(reader, backtrackGlyphCount);
                     //--------
-                    ushort inputGlyphCount = reader.ReadUInt16();
+                    var inputGlyphCount = reader.ReadUInt16();
                     subRuleTable.inputGlyphs = Utils.ReadUInt16Array(reader, inputGlyphCount - 1);//*** start with second glyph, so -1
                     //----------
-                    ushort lookaheadGlyphCount = reader.ReadUInt16();
+                    var lookaheadGlyphCount = reader.ReadUInt16();
                     subRuleTable.lookaheadGlyphs = Utils.ReadUInt16Array(reader, lookaheadGlyphCount);
                     //------------
-                    ushort substCount = reader.ReadUInt16();
+                    var substCount = reader.ReadUInt16();
                     subRuleTable.substLookupRecords = SubstLookupRecord.CreateSubstLookupRecords(reader, substCount);
 
                     return subRuleTable;
@@ -928,12 +928,12 @@ namespace Typography.OpenFont.Tables
                 {
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                     //
-                    ChainSubClassSet chainSubClassSet = new ChainSubClassSet();
-                    ushort count = reader.ReadUInt16();
-                    ushort[] subClassRuleOffsets = Utils.ReadUInt16Array(reader, count);
+                    var chainSubClassSet = new ChainSubClassSet();
+                    var count = reader.ReadUInt16();
+                    var subClassRuleOffsets = Utils.ReadUInt16Array(reader, count);
 
-                    ChainSubClassRuleTable[] subClassRuleTables = chainSubClassSet.subClassRuleTables = new ChainSubClassRuleTable[count];
-                    for (int i = 0; i < count; ++i)
+                    var subClassRuleTables = chainSubClassSet.subClassRuleTables = new ChainSubClassRuleTable[count];
+                    for (var i = 0; i < count; ++i)
                     {
                         subClassRuleTables[i] = ChainSubClassRuleTable.CreateFrom(reader, beginAt + subClassRuleOffsets[i]);
                     }
@@ -961,14 +961,14 @@ namespace Typography.OpenFont.Tables
                 {
                     reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
 
-                    ChainSubClassRuleTable subClassRuleTable = new ChainSubClassRuleTable();
-                    ushort backtrackingCount = reader.ReadUInt16();
+                    var subClassRuleTable = new ChainSubClassRuleTable();
+                    var backtrackingCount = reader.ReadUInt16();
                     subClassRuleTable.backtrakcingClassDefs = Utils.ReadUInt16Array(reader, backtrackingCount);
-                    ushort inputGlyphCount = reader.ReadUInt16();
+                    var inputGlyphCount = reader.ReadUInt16();
                     subClassRuleTable.inputClassDefs = Utils.ReadUInt16Array(reader, inputGlyphCount - 1);//** -1
-                    ushort lookaheadGlyphCount = reader.ReadUInt16();
+                    var lookaheadGlyphCount = reader.ReadUInt16();
                     subClassRuleTable.lookaheadClassDefs = Utils.ReadUInt16Array(reader, lookaheadGlyphCount);
-                    ushort substCount = reader.ReadUInt16();
+                    var substCount = reader.ReadUInt16();
                     subClassRuleTable.subsLookupRecords = SubstLookupRecord.CreateSubstLookupRecords(reader, substCount);
 
                     return subClassRuleTable;
@@ -1018,7 +1018,7 @@ namespace Typography.OpenFont.Tables
 
                 public override bool DoSubstitutionAt(IGlyphIndexList glyphIndices, int pos, int len)
                 {
-                    int inputLength = InputCoverages.Length;
+                    var inputLength = InputCoverages.Length;
 
                     // Check that there are enough context glyphs
                     if (pos < BacktrackingCoverages.Length ||
@@ -1028,7 +1028,7 @@ namespace Typography.OpenFont.Tables
                     }
 
                     // Check all coverages: if any of them does not match, abort substitution
-                    for (int i = 0; i < InputCoverages.Length; ++i)
+                    for (var i = 0; i < InputCoverages.Length; ++i)
                     {
                         if (InputCoverages[i].FindPosition(glyphIndices[pos + i]) < 0)
                         {
@@ -1036,7 +1036,7 @@ namespace Typography.OpenFont.Tables
                         }
                     }
 
-                    for (int i = 0; i < BacktrackingCoverages.Length; ++i)
+                    for (var i = 0; i < BacktrackingCoverages.Length; ++i)
                     {
                         if (BacktrackingCoverages[i].FindPosition(glyphIndices[pos - 1 - i]) < 0)
                         {
@@ -1044,7 +1044,7 @@ namespace Typography.OpenFont.Tables
                         }
                     }
 
-                    for (int i = 0; i < LookaheadCoverages.Length; ++i)
+                    for (var i = 0; i < LookaheadCoverages.Length; ++i)
                     {
                         if (LookaheadCoverages[i].FindPosition(glyphIndices[pos + inputLength + i]) < 0)
                         {
@@ -1053,13 +1053,13 @@ namespace Typography.OpenFont.Tables
                     }
 
                     // It's a match! Perform substitutions and return true if anything changed
-                    bool hasChanged = false;
-                    foreach (SubstLookupRecord lookupRecord in SubstLookupRecords)
+                    var hasChanged = false;
+                    foreach (var lookupRecord in SubstLookupRecords)
                     {
-                        ushort replaceAt = lookupRecord.sequenceIndex;
-                        ushort lookupIndex = lookupRecord.lookupListIndex;
+                        var replaceAt = lookupRecord.sequenceIndex;
+                        var lookupIndex = lookupRecord.lookupListIndex;
 
-                        LookupTable anotherLookup = OwnerGSub.LookupList[lookupIndex];
+                        var anotherLookup = OwnerGSub.LookupList[lookupIndex];
                         if (anotherLookup.DoSubstitutionAt(glyphIndices, pos + replaceAt, len - replaceAt))
                         {
                             hasChanged = true;
@@ -1070,12 +1070,12 @@ namespace Typography.OpenFont.Tables
                 }
                 public override void CollectAssociatedSubtitutionGlyphs(List<ushort> outputAssocGlyphs)
                 {
-                    foreach (SubstLookupRecord lookupRecord in SubstLookupRecords)
+                    foreach (var lookupRecord in SubstLookupRecords)
                     {
-                        ushort replaceAt = lookupRecord.sequenceIndex;
-                        ushort lookupIndex = lookupRecord.lookupListIndex;
+                        var replaceAt = lookupRecord.sequenceIndex;
+                        var lookupIndex = lookupRecord.lookupListIndex;
 
-                        LookupTable anotherLookup = OwnerGSub.LookupList[lookupIndex];
+                        var anotherLookup = OwnerGSub.LookupList[lookupIndex];
                         anotherLookup.CollectAssociatedSubstitutionGlyph(outputAssocGlyphs);
                     }
                 }
@@ -1098,7 +1098,7 @@ namespace Typography.OpenFont.Tables
 
                 reader.BaseStream.Seek(subTableStartAt, SeekOrigin.Begin);
 
-                ushort format = reader.ReadUInt16();
+                var format = reader.ReadUInt16();
                 switch (format)
                 {
                     default: throw new NotSupportedException();
@@ -1116,11 +1116,11 @@ namespace Typography.OpenFont.Tables
                             //-------------------------------
 
                             var subTable = new LkSubTableT6Fmt1();
-                            ushort coverage = reader.ReadUInt16();
-                            ushort chainSubRulesetCount = reader.ReadUInt16();
-                            ushort[] chainSubRulesetOffsets = Utils.ReadUInt16Array(reader, chainSubRulesetCount);
-                            ChainSubRuleSetTable[] subRuleSets = subTable.SubRuleSets = new ChainSubRuleSetTable[chainSubRulesetCount];
-                            for (int n = 0; n < chainSubRulesetCount; ++n)
+                            var coverage = reader.ReadUInt16();
+                            var chainSubRulesetCount = reader.ReadUInt16();
+                            var chainSubRulesetOffsets = Utils.ReadUInt16Array(reader, chainSubRulesetCount);
+                            var subRuleSets = subTable.SubRuleSets = new ChainSubRuleSetTable[chainSubRulesetCount];
+                            for (var n = 0; n < chainSubRulesetCount; ++n)
                             {
                                 subRuleSets[n] = ChainSubRuleSetTable.CreateFrom(reader, subTableStartAt + chainSubRulesetOffsets[n]);
                             }
@@ -1143,20 +1143,20 @@ namespace Typography.OpenFont.Tables
                             //Offset16 	ChainSubClassSet[ChainSubClassSetCnt] 	Array of offsets to ChainSubClassSet tables-from beginning of Substitution table-ordered by input class-may be NULL
                             //-------------------
                             var subTable = new LkSubTableT6Fmt2();
-                            ushort coverage = reader.ReadUInt16();
-                            ushort backtrackClassDefOffset = reader.ReadUInt16();
-                            ushort inputClassDefOffset = reader.ReadUInt16();
-                            ushort lookaheadClassDefOffset = reader.ReadUInt16();
-                            ushort chainSubClassSetCount = reader.ReadUInt16();
-                            ushort[] chainSubClassSetOffsets = Utils.ReadUInt16Array(reader, chainSubClassSetCount);
+                            var coverage = reader.ReadUInt16();
+                            var backtrackClassDefOffset = reader.ReadUInt16();
+                            var inputClassDefOffset = reader.ReadUInt16();
+                            var lookaheadClassDefOffset = reader.ReadUInt16();
+                            var chainSubClassSetCount = reader.ReadUInt16();
+                            var chainSubClassSetOffsets = Utils.ReadUInt16Array(reader, chainSubClassSetCount);
                             //
                             subTable.BacktrackClassDef = ClassDefTable.CreateFrom(reader, subTableStartAt + backtrackClassDefOffset);
                             subTable.InputClassDef = ClassDefTable.CreateFrom(reader, subTableStartAt + inputClassDefOffset);
                             subTable.LookaheadClassDef = ClassDefTable.CreateFrom(reader, subTableStartAt + lookaheadClassDefOffset);
                             if (chainSubClassSetCount != 0)
                             {
-                                ChainSubClassSet[] chainSubClassSets = subTable.ChainSubClassSets = new ChainSubClassSet[chainSubClassSetCount];
-                                for (int n = 0; n < chainSubClassSetCount; ++n)
+                                var chainSubClassSets = subTable.ChainSubClassSets = new ChainSubClassSet[chainSubClassSetCount];
+                                for (var n = 0; n < chainSubClassSetCount; ++n)
                                 {
                                     chainSubClassSets[n] = ChainSubClassSet.CreateFrom(reader, subTableStartAt + chainSubClassSetOffsets[n]);
                                 }
@@ -1179,14 +1179,14 @@ namespace Typography.OpenFont.Tables
                             //uint16 	SubstCount 	                    Number of SubstLookupRecords
                             //struct 	SubstLookupRecord[SubstCount] 	Array of SubstLookupRecords, in design order
                             //-------------------
-                            LkSubTableT6Fmt3 subTable = new LkSubTableT6Fmt3();
-                            ushort backtrackingGlyphCount = reader.ReadUInt16();
-                            ushort[] backtrackingCoverageOffsets = Utils.ReadUInt16Array(reader, backtrackingGlyphCount);
-                            ushort inputGlyphCount = reader.ReadUInt16();
-                            ushort[] inputGlyphCoverageOffsets = Utils.ReadUInt16Array(reader, inputGlyphCount);
-                            ushort lookAheadGlyphCount = reader.ReadUInt16();
-                            ushort[] lookAheadCoverageOffsets = Utils.ReadUInt16Array(reader, lookAheadGlyphCount);
-                            ushort substCount = reader.ReadUInt16();
+                            var subTable = new LkSubTableT6Fmt3();
+                            var backtrackingGlyphCount = reader.ReadUInt16();
+                            var backtrackingCoverageOffsets = Utils.ReadUInt16Array(reader, backtrackingGlyphCount);
+                            var inputGlyphCount = reader.ReadUInt16();
+                            var inputGlyphCoverageOffsets = Utils.ReadUInt16Array(reader, inputGlyphCount);
+                            var lookAheadGlyphCount = reader.ReadUInt16();
+                            var lookAheadCoverageOffsets = Utils.ReadUInt16Array(reader, lookAheadGlyphCount);
+                            var substCount = reader.ReadUInt16();
                             subTable.SubstLookupRecords = SubstLookupRecord.CreateSubstLookupRecords(reader, substCount);
 
                             subTable.BacktrackingCoverages = CoverageTable.CreateMultipleCoverageTables(subTableStartAt, backtrackingCoverageOffsets, reader);
@@ -1237,16 +1237,16 @@ namespace Typography.OpenFont.Tables
 
                 //The contextual substitution subtables defined in Examples 7, 8, and 9 at the end of this chapter show SubstLookupRecords.
                 reader.BaseStream.Seek(subTableStartAt, SeekOrigin.Begin);
-                ushort format = reader.ReadUInt16();
-                ushort extensionLookupType = reader.ReadUInt16();
-                uint extensionOffset = reader.ReadUInt32();
+                var format = reader.ReadUInt16();
+                var extensionLookupType = reader.ReadUInt16();
+                var extensionOffset = reader.ReadUInt32();
                 if (extensionLookupType == 7)
                 {
                     throw new NotSupportedException();
                 }
                 // Simply read the lookup table again with updated offsets
                 lookupType = extensionLookupType;
-                LookupSubTable subTable = ReadSubTable(reader, subTableStartAt + extensionOffset);
+                var subTable = ReadSubTable(reader, subTableStartAt + extensionOffset);
                 // FIXME: this is a bit hackish, try to find a better construct
                 lookupType = 7;
                 return subTable;

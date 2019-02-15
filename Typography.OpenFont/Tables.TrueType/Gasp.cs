@@ -45,10 +45,10 @@ namespace Typography.OpenFont.Tables
             //Type 	Name 	Description
             //USHORT 	rangeMaxPPEM 	Upper limit of range, in PPEM
             //USHORT 	rangeGaspBehavior 	Flags describing desired rasterizer behavior.
-            ushort version = reader.ReadUInt16();
-            ushort numRanges = reader.ReadUInt16();
+            var version = reader.ReadUInt16();
+            var numRanges = reader.ReadUInt16();
             _rangeRecords = new GaspRangeRecord[numRanges];
-            for (int i = 0; i < numRanges; ++i)
+            for (var i = 0; i < numRanges; ++i)
             {
                 _rangeRecords[i] = new GaspRangeRecord(
                     reader.ReadUInt16(),

@@ -58,13 +58,13 @@ namespace Typography.OpenFont.Tables
 
             //Note that the local offsets should be long-aligned, i.e., multiples of 4. Offsets which are not long-aligned may seriously degrade performance of some processors. 
 
-            int glyphCount = GlyphCount;
-            int lim = glyphCount + 1;
+            var glyphCount = GlyphCount;
+            var lim = glyphCount + 1;
             _offsets = new uint[lim];
             if (IsLongVersion)
             {
                 //long version
-                for (int i = 0; i < lim; i++)
+                for (var i = 0; i < lim; i++)
                 {
                     _offsets[i] = reader.ReadUInt32();
                 }
@@ -72,7 +72,7 @@ namespace Typography.OpenFont.Tables
             else
             {
                 //short version
-                for (int i = 0; i < lim; i++)
+                for (var i = 0; i < lim; i++)
                 {
                     _offsets[i] = (uint)(reader.ReadUInt16() << 1); // =*2
                 }

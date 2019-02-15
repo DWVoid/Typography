@@ -18,16 +18,16 @@ namespace Typography.OpenFont.Tables
         SvgDocumentEntry[] _entries; //TODO: review again
         protected override void ReadContentFrom(BinaryReader reader)
         {
-            long svgTableStartAt = reader.BaseStream.Position;
+            var svgTableStartAt = reader.BaseStream.Position;
             //SVG Main Header
             //Type      Name                Description
             //uint16    version             Table version(starting at 0). Set to 0.
             //Offset32  svgDocIndexOffset   Offset(relative to the start of the SVG table) to the SVG Documents Index.Must be non - zero.
             //uint32    reserved            Set to 0.
             //-----------
-            ushort version = reader.ReadUInt16();
-            uint offset32 = reader.ReadUInt32();
-            uint reserved = reader.ReadUInt32();
+            var version = reader.ReadUInt16();
+            var offset32 = reader.ReadUInt32();
+            var reserved = reader.ReadUInt32();
             //-------
 
 
@@ -38,10 +38,10 @@ namespace Typography.OpenFont.Tables
             //uint16                        numEntries         Number of SVG Document Index Entries.Must be non - zero.
             //SVG Document Index Entry      entries[numEntries] Array of SVG Document Index Entries.
             //        
-            long svgDocIndexStartAt = svgTableStartAt + offset32;
+            var svgDocIndexStartAt = svgTableStartAt + offset32;
             reader.BaseStream.Seek(svgDocIndexStartAt, SeekOrigin.Begin);
             //
-            ushort numEntries = reader.ReadUInt16();
+            var numEntries = reader.ReadUInt16();
             //
             //SVG Document Index Entry
             //Each SVG Document Index Entry specifies a range[startGlyphID, endGlyphID], inclusive,
@@ -59,7 +59,7 @@ namespace Typography.OpenFont.Tables
             //In both cases, svgDocLength encodes the length of the encoded data, not the decoded document.
 
             _entries = new SvgDocumentEntry[numEntries];
-            for (int i = 0; i < numEntries; ++i)
+            for (var i = 0; i < numEntries; ++i)
             {
                 _entries[i] = new SvgDocumentEntry()
                 {
@@ -71,10 +71,10 @@ namespace Typography.OpenFont.Tables
             }
 
             //TODO: review lazy load
-            for (int i = 0; i < numEntries; ++i)
+            for (var i = 0; i < numEntries; ++i)
             {
                 //read data
-                SvgDocumentEntry entry = _entries[i];
+                var entry = _entries[i];
 
                 if (entry.endGlyphID - entry.startGlyphID > 0)
                 {
@@ -89,7 +89,7 @@ namespace Typography.OpenFont.Tables
                     throw new System.NotSupportedException();
                 }
                 //
-                byte[] svgData = reader.ReadBytes((int)entry.svgDocLength);
+                var svgData = reader.ReadBytes((int)entry.svgDocLength);
                 _entries[i].svgBuffer = svgData;
                 if (svgData[0] == (byte)'<')
                 {
@@ -113,12 +113,12 @@ namespace Typography.OpenFont.Tables
             //xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"
             //test save the svg
             //save as html document for test 
-            System.Text.StringBuilder stbuilder = new System.Text.StringBuilder();
+            var stbuilder = new System.Text.StringBuilder();
             stbuilder.Append("<html><body>");
 
             //TODO: add exact SVG reader here
             //to view in WebBrowser -> we do Y-flip
-            string modified = originalGlyphSvg.Replace("xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">",
+            var modified = originalGlyphSvg.Replace("xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">",
                  "xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"800\" height=\"1600\"><g transform=\"scale(1,-1)\">"
                  ).Replace("</svg>", "</g></svg>");
             stbuilder.Append(modified);

@@ -36,11 +36,11 @@ namespace Typography.OpenFont.Tables
             //uint8 	xRatio 	        Value to use for x-Ratio
             //uint8 	yStartRatio 	Starting y-Ratio value.
             //uint8 	yEndRatio 	    Ending y-Ratio value.
-            ushort version = reader.ReadUInt16();
-            ushort numRecs = reader.ReadUInt16();
-            ushort numRatios = reader.ReadUInt16();
+            var version = reader.ReadUInt16();
+            var numRecs = reader.ReadUInt16();
+            var numRatios = reader.ReadUInt16();
             _ratios = new Ratio[numRatios];
-            for (int i = 0; i < numRatios; ++i)
+            for (var i = 0; i < numRatios; ++i)
             {
                 _ratios[i] = new Ratio(
                     reader.ReadByte(),
@@ -48,7 +48,7 @@ namespace Typography.OpenFont.Tables
                     reader.ReadByte(),
                     reader.ReadByte());
             }
-            ushort[] offsets = Utils.ReadUInt16Array(reader, numRatios);
+            var offsets = Utils.ReadUInt16Array(reader, numRatios);
             //------
             //actual vdmx group
             //TODO: implement this

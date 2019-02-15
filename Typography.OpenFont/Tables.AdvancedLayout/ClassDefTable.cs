@@ -106,22 +106,22 @@ namespace Typography.OpenFont.Tables
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
 
             //---------
-            ClassDefTable classDefTable = new ClassDefTable();
+            var classDefTable = new ClassDefTable();
             switch (classDefTable.Format = reader.ReadUInt16())
             {
                 default: throw new NotSupportedException();
                 case 1:
                     {
                         classDefTable.startGlyph = reader.ReadUInt16();
-                        ushort glyphCount = reader.ReadUInt16();
+                        var glyphCount = reader.ReadUInt16();
                         classDefTable.classValueArray = Utils.ReadUInt16Array(reader, glyphCount); 
                     }
                     break;
                 case 2:
                     {
-                        ushort classRangeCount = reader.ReadUInt16();
-                        ClassRangeRecord[] records = new ClassRangeRecord[classRangeCount];
-                        for (int i = 0; i < classRangeCount; ++i)
+                        var classRangeCount = reader.ReadUInt16();
+                        var records = new ClassRangeRecord[classRangeCount];
+                        for (var i = 0; i < classRangeCount; ++i)
                         {
                             records[i] = new ClassRangeRecord(
                                 reader.ReadUInt16(), //start glyph id

@@ -49,10 +49,10 @@ namespace Typography.OpenFont.Tables
             //----------------------------------------------------
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
             //
-            FeatureList featureList = new FeatureList();
-            ushort featureCount = reader.ReadUInt16();
-            FeatureRecord[] featureRecords = new FeatureRecord[featureCount];
-            for (int i = 0; i < featureCount; ++i)
+            var featureList = new FeatureList();
+            var featureCount = reader.ReadUInt16();
+            var featureRecords = new FeatureRecord[featureCount];
+            for (var i = 0; i < featureCount; ++i)
             {
                 //read script record
                 featureRecords[i] = new FeatureRecord(
@@ -60,10 +60,10 @@ namespace Typography.OpenFont.Tables
                     reader.ReadUInt16()); //Offset16 
             }
             //read each feature table
-            FeatureTable[] featureTables = featureList.featureTables = new FeatureTable[featureCount];
-            for (int i = 0; i < featureCount; ++i)
+            var featureTables = featureList.featureTables = new FeatureTable[featureCount];
+            for (var i = 0; i < featureCount; ++i)
             {
-                FeatureRecord frecord = featureRecords[i];
+                var frecord = featureRecords[i];
                 (featureTables[i] = FeatureTable.CreateFrom(reader, beginAt + frecord.offset)).FeatureTag = frecord.featureTag;
             }
             return featureList;
@@ -139,10 +139,10 @@ namespace Typography.OpenFont.Tables
             {
                 reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                 //
-                ushort featureParams = reader.ReadUInt16();
-                ushort lookupCount = reader.ReadUInt16();
+                var featureParams = reader.ReadUInt16();
+                var lookupCount = reader.ReadUInt16();
 
-                FeatureTable featureTable = new FeatureTable();
+                var featureTable = new FeatureTable();
                 featureTable._lookupListIndices = Utils.ReadUInt16Array(reader, lookupCount);
                 return featureTable;
             }

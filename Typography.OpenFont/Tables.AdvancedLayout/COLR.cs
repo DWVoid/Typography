@@ -16,26 +16,26 @@ namespace Typography.OpenFont.Tables
         // https://www.microsoft.com/typography/otspec/colr.htm
         protected override void ReadContentFrom(BinaryReader reader)
         {
-            long offset = reader.BaseStream.Position;
+            var offset = reader.BaseStream.Position;
 
-            ushort version = reader.ReadUInt16();
-            ushort glyphCount = reader.ReadUInt16();
-            uint glyphsOffset = reader.ReadUInt32();
-            uint layersOffset = reader.ReadUInt32();
-            ushort layersCount = reader.ReadUInt16();
+            var version = reader.ReadUInt16();
+            var glyphCount = reader.ReadUInt16();
+            var glyphsOffset = reader.ReadUInt32();
+            var layersOffset = reader.ReadUInt32();
+            var layersCount = reader.ReadUInt16();
             GlyphLayers = new ushort[layersCount];
             GlyphPalettes = new ushort[layersCount];
 
             reader.BaseStream.Seek(offset + glyphsOffset, SeekOrigin.Begin);
-            for (int i = 0; i < glyphCount; ++i)
+            for (var i = 0; i < glyphCount; ++i)
             {
-                ushort gid = reader.ReadUInt16();
+                var gid = reader.ReadUInt16();
                 LayerIndices[gid] = reader.ReadUInt16();
                 LayerCounts[gid] = reader.ReadUInt16();
             }
 
             reader.BaseStream.Seek(offset + layersOffset, SeekOrigin.Begin);
-            for (int i = 0; i < GlyphLayers.Length; ++i)
+            for (var i = 0; i < GlyphLayers.Length; ++i)
             {
                 GlyphLayers[i] = reader.ReadUInt16();
                 GlyphPalettes[i] = reader.ReadUInt16();

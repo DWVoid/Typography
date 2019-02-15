@@ -12,9 +12,9 @@ namespace Typography.OpenFont.Tables
 
         static PosRuleSetTable[] CreateMultiplePosRuleSetTables(long initPos, ushort[] offsets, BinaryReader reader)
         {
-            int j = offsets.Length;
-            PosRuleSetTable[] results = new PosRuleSetTable[j];
-            for (int i = 0; i < j; ++i)
+            var j = offsets.Length;
+            var results = new PosRuleSetTable[j];
+            for (var i = 0; i < j; ++i)
             {
                 results[i] = PosRuleSetTable.CreateFrom(reader, initPos + offsets[i]);
             }
@@ -24,8 +24,8 @@ namespace Typography.OpenFont.Tables
         static PosLookupRecord[] CreateMultiplePosLookupRecords(BinaryReader reader, int count)
         {
 
-            PosLookupRecord[] results = new PosLookupRecord[count];
-            for (int n = 0; n < count; ++n)
+            var results = new PosLookupRecord[count];
+            for (var n = 0; n < count; ++n)
             {
                 results[n] = PosLookupRecord.CreateFrom(reader);
             }
@@ -38,24 +38,24 @@ namespace Typography.OpenFont.Tables
             PairSet[] _pairSets;
             public void ReadFrom(BinaryReader reader, ushort v1format, ushort v2format)
             {
-                ushort rowCount = reader.ReadUInt16();
+                var rowCount = reader.ReadUInt16();
                 _pairSets = new PairSet[rowCount];
-                for (int i = 0; i < rowCount; ++i)
+                for (var i = 0; i < rowCount; ++i)
                 {
                     //GlyphID 	SecondGlyph 	GlyphID of second glyph in the pair-first glyph is listed in the Coverage table
                     //ValueRecord 	Value1 	Positioning data for the first glyph in the pair
                     //ValueRecord 	Value2 	Positioning data for the second glyph in the pair
-                    ushort secondGlyph = reader.ReadUInt16();
-                    ValueRecord v1 = ValueRecord.CreateFrom(reader, v1format);
-                    ValueRecord v2 = ValueRecord.CreateFrom(reader, v2format);
+                    var secondGlyph = reader.ReadUInt16();
+                    var v1 = ValueRecord.CreateFrom(reader, v1format);
+                    var v2 = ValueRecord.CreateFrom(reader, v2format);
                     //
                     _pairSets[i] = new PairSet(secondGlyph, v1, v2);
                 }
             }
             public bool FindPairSet(ushort secondGlyphIndex, out PairSet foundPairSet)
             {
-                int j = _pairSets.Length;
-                for (int i = 0; i < j; ++i)
+                var j = _pairSets.Length;
+                for (var i = 0; i < j; ++i)
                 {
                     if (_pairSets[i].secondGlyph == secondGlyphIndex)
                     {
@@ -212,7 +212,7 @@ namespace Typography.OpenFont.Tables
             public ushort ydeviceTableOffset;
             public static AnchorPoint CreateFrom(BinaryReader reader, long beginAt)
             {
-                AnchorPoint anchorPoint = new AnchorPoint();
+                var anchorPoint = new AnchorPoint();
                 reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
 
                 switch (anchorPoint.format = reader.ReadUInt16())
@@ -364,10 +364,10 @@ namespace Typography.OpenFont.Tables
             }
             void ReadFrom(BinaryReader reader)
             {
-                long markTableBeginAt = reader.BaseStream.Position;
-                ushort markCount = reader.ReadUInt16();
+                var markTableBeginAt = reader.BaseStream.Position;
+                var markCount = reader.ReadUInt16();
                 _records = new MarkRecord[markCount];
-                for (int i = 0; i < markCount; ++i)
+                for (var i = 0; i < markCount; ++i)
                 {
                     //1 mark : 1 anchor
                     _records[i] = new MarkRecord(
@@ -377,9 +377,9 @@ namespace Typography.OpenFont.Tables
                 //---------------------------
                 //read anchor
                 _anchorPoints = new AnchorPoint[markCount];
-                for (int i = 0; i < markCount; ++i)
+                for (var i = 0; i < markCount; ++i)
                 {
-                    MarkRecord markRec = _records[i];
+                    var markRec = _records[i];
                     //bug?
                     if (markRec.offset < 0)
                     {
@@ -456,11 +456,11 @@ namespace Typography.OpenFont.Tables
             {
                 reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                 //---
-                ushort mark2Count = reader.ReadUInt16();
-                ushort[] offsets = Utils.ReadUInt16Array(reader, mark2Count * classCount);
+                var mark2Count = reader.ReadUInt16();
+                var offsets = Utils.ReadUInt16Array(reader, mark2Count * classCount);
                 //read mark2 anchors
-                AnchorPoint[] anchors = new AnchorPoint[mark2Count * classCount];
-                for (int i = 0; i < mark2Count * classCount; ++i)
+                var anchors = new AnchorPoint[mark2Count * classCount];
+                for (var i = 0; i < mark2Count * classCount; ++i)
                 {
                     anchors[i] = AnchorPoint.CreateFrom(reader, beginAt + offsets[i]);
                 }
@@ -510,18 +510,18 @@ namespace Typography.OpenFont.Tables
                 reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                 //---
                 var baseArrTable = new BaseArrayTable();
-                ushort baseCount = reader.ReadUInt16();
+                var baseCount = reader.ReadUInt16();
                 baseArrTable._records = new BaseRecord[baseCount];
                 // Read all baseAnchorOffsets in one go
-                ushort[] baseAnchorOffsets = Utils.ReadUInt16Array(reader, classCount * baseCount);
-                for (int i = 0; i < baseCount; ++i)
+                var baseAnchorOffsets = Utils.ReadUInt16Array(reader, classCount * baseCount);
+                for (var i = 0; i < baseCount; ++i)
                 {
-                    BaseRecord baseRec = new BaseRecord(classCount);
+                    var baseRec = new BaseRecord(classCount);
 
                     //each base has anchor point for mark glyph'class
-                    for (int n = 0; n < classCount; ++n)
+                    for (var n = 0; n < classCount; ++n)
                     {
-                        ushort offset = baseAnchorOffsets[i * classCount + n];
+                        var offset = baseAnchorOffsets[i * classCount + n];
                         if (offset <= 0)
                         {
                             //TODO: review here 
@@ -560,11 +560,11 @@ namespace Typography.OpenFont.Tables
 #if DEBUG
             public override string ToString()
             {
-                StringBuilder stbuilder = new StringBuilder();
+                var stbuilder = new StringBuilder();
                 if (anchors != null)
                 {
-                    int i = 0;
-                    foreach (AnchorPoint a in anchors)
+                    var i = 0;
+                    foreach (var a in anchors)
                     {
                         if (i > 0)
                         {
@@ -613,13 +613,13 @@ namespace Typography.OpenFont.Tables
             LigatureAttachTable[] _ligatures;
             public void ReadFrom(BinaryReader reader, ushort classCount)
             {
-                long startPos = reader.BaseStream.Position;
-                ushort ligatureCount = reader.ReadUInt16();
-                ushort[] offsets = Utils.ReadUInt16Array(reader, ligatureCount);
+                var startPos = reader.BaseStream.Position;
+                var ligatureCount = reader.ReadUInt16();
+                var offsets = Utils.ReadUInt16Array(reader, ligatureCount);
 
                 _ligatures = new LigatureAttachTable[ligatureCount];
 
-                for (int i = 0; i < ligatureCount; ++i)
+                for (var i = 0; i < ligatureCount; ++i)
                 {
                     //each ligature table
                     reader.BaseStream.Seek(startPos + offsets[i], SeekOrigin.Begin);
@@ -637,11 +637,11 @@ namespace Typography.OpenFont.Tables
             ComponentRecord[] _records;
             public static LigatureAttachTable ReadFrom(BinaryReader reader, ushort classCount)
             {
-                LigatureAttachTable table = new LigatureAttachTable();
-                ushort componentCount = reader.ReadUInt16();
-                ComponentRecord[] componentRecs = new ComponentRecord[componentCount];
+                var table = new LigatureAttachTable();
+                var componentCount = reader.ReadUInt16();
+                var componentRecs = new ComponentRecord[componentCount];
                 table._records = componentRecs;
-                for (int i = 0; i < componentCount; ++i)
+                for (var i = 0; i < componentCount; ++i)
                 {
                     componentRecs[i] = new ComponentRecord(
                         Utils.ReadUInt16Array(reader, classCount));
@@ -708,12 +708,12 @@ namespace Typography.OpenFont.Tables
             PosRuleTable[] _posRuleTables;
             void ReadFrom(BinaryReader reader)
             {
-                long tableStartAt = reader.BaseStream.Position;
-                ushort posRuleCount = reader.ReadUInt16();
-                ushort[] posRuleTableOffsets = Utils.ReadUInt16Array(reader, posRuleCount);
-                int j = posRuleTableOffsets.Length;
+                var tableStartAt = reader.BaseStream.Position;
+                var posRuleCount = reader.ReadUInt16();
+                var posRuleTableOffsets = Utils.ReadUInt16Array(reader, posRuleCount);
+                var j = posRuleTableOffsets.Length;
                 _posRuleTables = new PosRuleTable[posRuleCount];
-                for (int i = 0; i < j; ++i)
+                for (var i = 0; i < j; ++i)
                 {
                     //move to and read
                     reader.BaseStream.Seek(tableStartAt + posRuleTableOffsets[i], SeekOrigin.Begin);
@@ -746,8 +746,8 @@ namespace Typography.OpenFont.Tables
             ushort[] _inputGlyphIds;
             public void ReadFrom(BinaryReader reader)
             {
-                ushort glyphCount = reader.ReadUInt16();
-                ushort posCount = reader.ReadUInt16();
+                var glyphCount = reader.ReadUInt16();
+                var posCount = reader.ReadUInt16();
                 _inputGlyphIds = Utils.ReadUInt16Array(reader, glyphCount - 1);
                 _posLookupRecords = CreateMultiplePosLookupRecords(reader, posCount);
             }
@@ -785,14 +785,14 @@ namespace Typography.OpenFont.Tables
             PosClassRule[] _posClasses;
             void ReadFrom(BinaryReader reader)
             {
-                long tableStartAt = reader.BaseStream.Position;
+                var tableStartAt = reader.BaseStream.Position;
                 //
-                ushort posClassRuleCnt = reader.ReadUInt16();
-                ushort[] posClassRuleOffsets = Utils.ReadUInt16Array(reader, posClassRuleCnt);
-                int j = posClassRuleOffsets.Length;
+                var posClassRuleCnt = reader.ReadUInt16();
+                var posClassRuleOffsets = Utils.ReadUInt16Array(reader, posClassRuleCnt);
+                var j = posClassRuleOffsets.Length;
 
                 _posClasses = new PosClassRule[posClassRuleCnt];
-                for (int i = 0; i < j; ++i)
+                for (var i = 0; i < j; ++i)
                 {
                     //move to and read                     
                     _posClasses[i] = PosClassRule.CreateFrom(reader, tableStartAt + posClassRuleOffsets[i]);
@@ -818,9 +818,9 @@ namespace Typography.OpenFont.Tables
                 //--------
                 reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
                 //--------
-                PosClassRule posClassRule = new PosClassRule();
-                ushort glyphCount = reader.ReadUInt16();
-                ushort posCount = reader.ReadUInt16();
+                var posClassRule = new PosClassRule();
+                var glyphCount = reader.ReadUInt16();
+                var posCount = reader.ReadUInt16();
                 posClassRule._inputGlyphIds = Utils.ReadUInt16Array(reader, glyphCount - 1);
                 posClassRule._posLookupRecords = CreateMultiplePosLookupRecords(reader, posCount);
                 return posClassRule;

@@ -37,7 +37,7 @@ namespace Typography.OpenFont
             // "You search for the first endCode that is greater than or equal to the character code you want to map"
             // "The segments are sorted in order of increasing endCode values"
             // -> binary search is valid here
-            int i = Array.BinarySearch(_endCode, (ushort)codepoint);
+            var i = Array.BinarySearch(_endCode, (ushort)codepoint);
             i = i < 0 ? ~i : i;
 
             // https://www.microsoft.com/typography/otspec/cmap.htm#format4
@@ -95,7 +95,7 @@ namespace Typography.OpenFont
             // https://www.microsoft.com/typography/otspec/cmap.htm#format12
             // "Groups must be sorted by increasing startCharCode."
             // -> binary search is valid here
-            int i = Array.BinarySearch(_startCharCodes, (uint)codepoint);
+            var i = Array.BinarySearch(_startCharCodes, (uint)codepoint);
             i = i < 0 ? ~i - 1 : i;
 
             if (i >= 0 && codepoint <= _endCharCodes[i])
@@ -123,7 +123,7 @@ namespace Typography.OpenFont
             // Codes outside of this subrange are mapped to glyph index 0.
             // The offset of the code (from the first code) within this subrange is used as
             // index to the glyphIdArray, which provides the glyph index value.
-            int i = codepoint - _startCode;
+            var i = codepoint - _startCode;
             return i >= 0 && i < _glyphIdArray.Length ? _glyphIdArray[i] : (ushort)0;
         }
 
@@ -162,7 +162,7 @@ namespace Typography.OpenFont
                 }
 
                 // If the sequence is a default UVS, return the default glyph
-                for (int i = 0; i < sel.DefaultStartCodes.Count; ++i)
+                for (var i = 0; i < sel.DefaultStartCodes.Count; ++i)
                 {
                     if (codepoint >= sel.DefaultStartCodes[i] && codepoint < sel.DefaultEndCodes[i])
                     {
@@ -212,15 +212,15 @@ namespace Typography.OpenFont
             // non-default UVSes.
             // Glyph IDs to be used for non-default UVSes are specified in the Non-Default UVS table.
 
-            long beginAt = reader.BaseStream.Position - 2; // account for header format entry 
-            uint length = reader.ReadUInt32(); // Byte length of this subtable (including the header)
-            uint numVarSelectorRecords = reader.ReadUInt32();
+            var beginAt = reader.BaseStream.Position - 2; // account for header format entry 
+            var length = reader.ReadUInt32(); // Byte length of this subtable (including the header)
+            var numVarSelectorRecords = reader.ReadUInt32();
 
             var variationSelectors = new Dictionary<int, VariationSelector>();
-            int[] varSelectors = new int[numVarSelectorRecords];
-            uint[] defaultUVSOffsets = new uint[numVarSelectorRecords];
-            uint[] nonDefaultUVSOffsets = new uint[numVarSelectorRecords];
-            for (int i = 0; i < numVarSelectorRecords; ++i)
+            var varSelectors = new int[numVarSelectorRecords];
+            var defaultUVSOffsets = new uint[numVarSelectorRecords];
+            var nonDefaultUVSOffsets = new uint[numVarSelectorRecords];
+            for (var i = 0; i < numVarSelectorRecords; ++i)
             {
                 varSelectors[i] = Utils.ReadUInt24(reader);
                 defaultUVSOffsets[i] = reader.ReadUInt32();
@@ -228,7 +228,7 @@ namespace Typography.OpenFont
             }
 
 
-            for (int i = 0; i < numVarSelectorRecords; ++i)
+            for (var i = 0; i < numVarSelectorRecords; ++i)
             {
                 var sel = new VariationSelector();
 
@@ -262,10 +262,10 @@ namespace Typography.OpenFont
                     // ‘startUnicodeValue’ of the following range (if any).
 
                     reader.BaseStream.Seek(beginAt + defaultUVSOffsets[i], SeekOrigin.Begin);
-                    uint numUnicodeValueRanges = reader.ReadUInt32();
-                    for (int n = 0; n < numUnicodeValueRanges; ++n)
+                    var numUnicodeValueRanges = reader.ReadUInt32();
+                    for (var n = 0; n < numUnicodeValueRanges; ++n)
                     {
-                        int startCode = (int)Utils.ReadUInt24(reader);
+                        var startCode = Utils.ReadUInt24(reader);
                         sel.DefaultStartCodes.Add(startCode);
                         sel.DefaultEndCodes.Add(startCode + reader.ReadByte());
                     }
@@ -299,11 +299,11 @@ namespace Typography.OpenFont
                     // mappings in this table may have the same ‘unicodeValue’ values.
 
                     reader.BaseStream.Seek(beginAt + nonDefaultUVSOffsets[i], SeekOrigin.Begin);
-                    uint numUVSMappings = reader.ReadUInt32();
-                    for (int n = 0; n < numUVSMappings; ++n)
+                    var numUVSMappings = reader.ReadUInt32();
+                    for (var n = 0; n < numUVSMappings; ++n)
                     {
-                        int unicodeValue = (int)Utils.ReadUInt24(reader);
-                        ushort glyphID = reader.ReadUInt16();
+                        var unicodeValue = Utils.ReadUInt24(reader);
+                        var glyphID = reader.ReadUInt16();
                         sel.UVSMappings.Add(unicodeValue, glyphID);
                     }
                 }
@@ -454,10 +454,10 @@ namespace Typography.OpenFont
         }
         public IEnumerable<ushort> GetGlyphIndexIter()
         {
-            foreach (List<ushort> list in _registerSegments.Values)
+            foreach (var list in _registerSegments.Values)
             {
-                int j = list.Count;
-                for (int i = 0; i < j; ++i)
+                var j = list.Count;
+                for (var i = 0; i < j; ++i)
                 {
                     yield return list[i];
                 }

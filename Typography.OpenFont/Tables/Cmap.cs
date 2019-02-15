@@ -84,9 +84,9 @@ namespace Typography.OpenFont.Tables
 
             if (!_codepointToGlyphs.TryGetValue(codepoint, out ret))
             {
-                foreach (CharacterMap cmap in _charMaps)
+                foreach (var cmap in _charMaps)
                 {
-                    ushort gid = cmap.CharacterToGlyphIndex(codepoint);
+                    var gid = cmap.CharacterToGlyphIndex(codepoint);
 
                     //https://www.microsoft.com/typography/OTSPEC/cmap.htm
                     //...When building a Unicode font for Windows, the platform ID should be 3 and the encoding ID should be 1
@@ -104,12 +104,12 @@ namespace Typography.OpenFont.Tables
             //  -> otherwise, return 0
             if (nextCodepoint > 0)
             {
-                foreach (CharacterMap cmap in _charMaps)
+                foreach (var cmap in _charMaps)
                 {
                     if (cmap is CharMapFormat14)
                     {
-                        CharMapFormat14 cmap14 = cmap as CharMapFormat14;
-                        ushort gid = cmap14.CharacterPairToGlyphIndex(codepoint, ret, nextCodepoint);
+                        var cmap14 = cmap as CharMapFormat14;
+                        var gid = cmap14.CharacterPairToGlyphIndex(codepoint, ret, nextCodepoint);
                         if (gid > 0)
                         {
                             return gid;
@@ -129,25 +129,25 @@ namespace Typography.OpenFont.Tables
         protected override void ReadContentFrom(BinaryReader input)
         {
             //https://www.microsoft.com/typography/otspec/cmap.htm
-            long beginAt = input.BaseStream.Position;
+            var beginAt = input.BaseStream.Position;
             //
-            ushort version = input.ReadUInt16(); // 0
-            ushort tableCount = input.ReadUInt16();
+            var version = input.ReadUInt16(); // 0
+            var tableCount = input.ReadUInt16();
 
-            ushort[] platformIds = new ushort[tableCount];
-            ushort[] encodingIds = new ushort[tableCount];
-            uint[] offsets = new uint[tableCount];
-            for (int i = 0; i < tableCount; i++)
+            var platformIds = new ushort[tableCount];
+            var encodingIds = new ushort[tableCount];
+            var offsets = new uint[tableCount];
+            for (var i = 0; i < tableCount; i++)
             {
                 platformIds[i] = input.ReadUInt16();
                 encodingIds[i] = input.ReadUInt16();
                 offsets[i] = input.ReadUInt32();
             }
 
-            for (int i = 0; i < tableCount; i++)
+            for (var i = 0; i < tableCount; i++)
             {
                 input.BaseStream.Seek(beginAt + offsets[i], SeekOrigin.Begin);
-                CharacterMap cmap = ReadCharacterMap(input);
+                var cmap = ReadCharacterMap(input);
                 cmap.PlatformId = platformIds[i];
                 cmap.EncodingId = encodingIds[i];
                 _charMaps.Add(cmap);
@@ -156,7 +156,7 @@ namespace Typography.OpenFont.Tables
 
         static CharacterMap ReadFormat_0(BinaryReader input)
         {
-            ushort length = input.ReadUInt16();
+            var length = input.ReadUInt16();
             //Format 0: Byte encoding table
             //This is the Apple standard character to glyph index mapping table.
             //Type  	Name 	        Description
@@ -169,19 +169,19 @@ namespace Typography.OpenFont.Tables
             //The glyph set is limited to 256. Note that if this format is used to index into a larger glyph set,
             //only the first 256 glyphs will be accessible. 
 
-            ushort language = input.ReadUInt16();
-            byte[] only256Glyphs = input.ReadBytes(256);
-            ushort[] only256UInt16Glyphs = new ushort[256];
-            for (int i = 255; i >= 0; --i)
+            var language = input.ReadUInt16();
+            var only256Glyphs = input.ReadBytes(256);
+            var only256UInt16Glyphs = new ushort[256];
+            for (var i = 255; i >= 0; --i)
             {
                 //expand
                 only256UInt16Glyphs[i] = only256Glyphs[i];
             }
             //convert to format4 cmap table
-            ushort[] startArray = new ushort[] { 0, 0xFFFF };
-            ushort[] endArray = new ushort[] { 255, 0xFFFF };
-            ushort[] deltaArray = new ushort[] { 0, 1 };
-            ushort[] offsetArray = new ushort[] { 4, 0 };
+            var startArray = new ushort[] { 0, 0xFFFF };
+            var endArray = new ushort[] { 255, 0xFFFF };
+            var deltaArray = new ushort[] { 0, 1 };
+            var offsetArray = new ushort[] { 4, 0 };
             return new CharMapFormat4(startArray, endArray, deltaArray, offsetArray, only256UInt16Glyphs);
         }
 
@@ -235,7 +235,7 @@ namespace Typography.OpenFont.Tables
 
         static CharMapFormat4 ReadFormat_4(BinaryReader input)
         {
-            ushort lenOfSubTable = input.ReadUInt16(); //This is the length in bytes of the subtable. ****
+            var lenOfSubTable = input.ReadUInt16(); //This is the length in bytes of the subtable. ****
             //This is the Microsoft standard character to glyph index mapping table for fonts that support Unicode ranges other than the range [U+D800 - U+DFFF] (defined as Surrogates Area, in Unicode v 3.0) 
             //which is used for UCS-4 characters.
             //If a font supports this character range (i.e. in turn supports the UCS-4 characters) a subtable in this format with a platform specific encoding ID 1 is yet needed,
@@ -247,9 +247,9 @@ namespace Typography.OpenFont.Tables
             //    A four-word header gives parameters for an optimized search of the segment list;
             //    Four parallel arrays describe the segments (one segment for each contiguous range of codes);
             //    A variable-length array of glyph IDs (unsigned words).
-            long tableStartEndAt = input.BaseStream.Position + lenOfSubTable;
+            var tableStartEndAt = input.BaseStream.Position + lenOfSubTable;
 
-            ushort language = input.ReadUInt16();
+            var language = input.ReadUInt16();
             //Note on the language field in 'cmap' subtables: 
             //The language field must be set to zero for all cmap subtables whose platform IDs are other than Macintosh (platform ID 1).
             //For cmap subtables whose platform IDs are Macintosh, set this field to the Macintosh language ID of the cmap subtable plus one, 
@@ -257,23 +257,23 @@ namespace Typography.OpenFont.Tables
             //For example, a Mac OS Turkish cmap subtable must set this field to 18, since the Macintosh language ID for Turkish is 17. 
             //A Mac OS Roman cmap subtable must set this field to 0, since Mac OS Roman is not a language-specific encoding.
 
-            ushort segCountX2 = input.ReadUInt16(); //2 * segCount
-            ushort searchRange = input.ReadUInt16(); //2 * (2**FLOOR(log2(segCount)))
-            ushort entrySelector = input.ReadUInt16();//2 * (2**FLOOR(log2(segCount)))
-            ushort rangeShift = input.ReadUInt16(); //2 * (2**FLOOR(log2(segCount)))
-            int segCount = segCountX2 / 2;
-            ushort[] endCode = Utils.ReadUInt16Array(input, segCount);//Ending character code for each segment, last = 0xFFFF.            
+            var segCountX2 = input.ReadUInt16(); //2 * segCount
+            var searchRange = input.ReadUInt16(); //2 * (2**FLOOR(log2(segCount)))
+            var entrySelector = input.ReadUInt16();//2 * (2**FLOOR(log2(segCount)))
+            var rangeShift = input.ReadUInt16(); //2 * (2**FLOOR(log2(segCount)))
+            var segCount = segCountX2 / 2;
+            var endCode = Utils.ReadUInt16Array(input, segCount);//Ending character code for each segment, last = 0xFFFF.            
                                                                       //>To ensure that the search will terminate, the final endCode value must be 0xFFFF.
                                                                       //>This segment need not contain any valid mappings. It can simply map the single character code 0xFFFF to the missing character glyph, glyph 0.
 
-            ushort Reserved = input.ReadUInt16(); // always 0
-            ushort[] startCode = Utils.ReadUInt16Array(input, segCount); //Starting character code for each segment
-            ushort[] idDelta = Utils.ReadUInt16Array(input, segCount); //Delta for all character codes in segment
-            ushort[] idRangeOffset = Utils.ReadUInt16Array(input, segCount); //Offset in bytes to glyph indexArray, or 0   
+            var Reserved = input.ReadUInt16(); // always 0
+            var startCode = Utils.ReadUInt16Array(input, segCount); //Starting character code for each segment
+            var idDelta = Utils.ReadUInt16Array(input, segCount); //Delta for all character codes in segment
+            var idRangeOffset = Utils.ReadUInt16Array(input, segCount); //Offset in bytes to glyph indexArray, or 0   
                                                                              //------------------------------------------------------------------------------------ 
-            long remainingLen = tableStartEndAt - input.BaseStream.Position;
-            int recordNum2 = (int)(remainingLen / 2);
-            ushort[] glyphIdArray = Utils.ReadUInt16Array(input, recordNum2);//Glyph index array                          
+            var remainingLen = tableStartEndAt - input.BaseStream.Position;
+            var recordNum2 = (int)(remainingLen / 2);
+            var glyphIdArray = Utils.ReadUInt16Array(input, recordNum2);//Glyph index array                          
             return new CharMapFormat4(startCode, endCode, idDelta, idRangeOffset, glyphIdArray);
         }
 
@@ -293,11 +293,11 @@ namespace Typography.OpenFont.Tables
             //The offset of the code(from the first code) within this subrange is used as index to the glyphIdArray, 
             //which provides the glyph index value.
 
-            ushort length = input.ReadUInt16();
-            ushort language = input.ReadUInt16();
-            ushort firstCode = input.ReadUInt16();
-            ushort entryCount = input.ReadUInt16();
-            ushort[] glyphIdArray = Utils.ReadUInt16Array(input, entryCount);
+            var length = input.ReadUInt16();
+            var language = input.ReadUInt16();
+            var firstCode = input.ReadUInt16();
+            var entryCount = input.ReadUInt16();
+            var glyphIdArray = Utils.ReadUInt16Array(input, entryCount);
             return new CharMapFormat6(firstCode, glyphIdArray);
         }
 
@@ -338,21 +338,21 @@ namespace Typography.OpenFont.Tables
             //needs to be a super set of the content in the format 4 subtable.
             //The format 4 subtable needs to be in the cmap table to enable backward compatibility needs.
 
-            ushort reserved = input.ReadUInt16();
+            var reserved = input.ReadUInt16();
 #if DEBUG
             if (reserved != 0) { throw new NotSupportedException(); }
 #endif
 
-            uint length = input.ReadUInt32();// Byte length of this subtable(including the header)
-            uint language = input.ReadUInt32();
-            uint numGroups = input.ReadUInt32();
+            var length = input.ReadUInt32();// Byte length of this subtable(including the header)
+            var language = input.ReadUInt32();
+            var numGroups = input.ReadUInt32();
 
 #if DEBUG
             if (numGroups > int.MaxValue) { throw new NotSupportedException(); }
 #endif
-            uint[] startCharCodes = new uint[(int)numGroups];
-            uint[] endCharCodes = new uint[(int)numGroups];
-            uint[] startGlyphIds = new uint[(int)numGroups];
+            var startCharCodes = new uint[(int)numGroups];
+            var endCharCodes = new uint[(int)numGroups];
+            var startGlyphIds = new uint[(int)numGroups];
 
 
             for (uint i = 0; i < numGroups; ++i)
@@ -367,7 +367,7 @@ namespace Typography.OpenFont.Tables
 
         private static CharacterMap ReadCharacterMap(BinaryReader input)
         {
-            ushort format = input.ReadUInt16();
+            var format = input.ReadUInt16();
             switch (format)
             {
                 default:

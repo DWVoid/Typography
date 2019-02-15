@@ -134,10 +134,10 @@ namespace Typography.OpenFont
             if (_cffTable != null)
             {
                 //early preview ...
-                List<CFF.Cff1Font> cff1Fonts = _cffTable.Cff1FontSet._fonts;
-                for (int i = 0; i < cff1Fonts.Count; i++)
+                var cff1Fonts = _cffTable.Cff1FontSet._fonts;
+                for (var i = 0; i < cff1Fonts.Count; i++)
                 {
-                    Glyph glyph = cff1Fonts[i].GetGlyphByName(glyphName);
+                    var glyph = cff1Fonts[i].GetGlyphByName(glyphName);
                     if (glyph != null) return glyph;
                 }
                 return null;
@@ -328,13 +328,13 @@ namespace Typography.OpenFont
             // we need to use "int".
             // This allows characters such as 🙌 or 𐐷 or to be treated as single codepoints even
             // though they are encoded as two "char"s in a C# string.
-            for (int i = 0; i < len; ++i)
+            for (var i = 0; i < len; ++i)
             {
-                char ch = str[startAt + i];
+                var ch = str[startAt + i];
                 int codepoint = ch;
                 if (char.IsHighSurrogate(ch) && i + 1 < len)
                 {
-                    char nextCh = str[startAt + i + 1];
+                    var nextCh = str[startAt + i + 1];
                     if (char.IsLowSurrogate(nextCh))
                     {
                         ++i;
@@ -355,13 +355,13 @@ namespace Typography.OpenFont
             // we need to use "int".
             // This allows characters such as 🙌 or 𐐷 or to be treated as single codepoints even
             // though they are encoded as two "char"s in a C# string.
-            for (int i = 0; i < len; ++i)
+            for (var i = 0; i < len; ++i)
             {
-                char ch = str[startAt + i];
+                var ch = str[startAt + i];
                 int codepoint = ch;
                 if (char.IsHighSurrogate(ch) && i + 1 < len)
                 {
-                    char nextCh = str[startAt + i + 1];
+                    var nextCh = str[startAt + i + 1];
                     if (char.IsLowSurrogate(nextCh))
                     {
                         ++i;
@@ -389,8 +389,8 @@ namespace Typography.OpenFont
                     return false;
                 }
                 //-----------------------------
-                long bits = (long)unicodeLangBits;
-                int bitpos = (int)(bits >> 32);
+                var bits = (long)unicodeLangBits;
+                var bitpos = (int)(bits >> 32);
 
                 if (bitpos == 0)
                 {
@@ -458,8 +458,8 @@ namespace Typography.OpenFont
                 //8                         WWS     The font has ‘name’ table strings consistent with a weight / width / slope family without requiring use of ‘name’ IDs 21 and 22. (Please see more detailed description below.)
                 //9                         OBLIQUE     Font contains oblique characters.
                 //10–15 < reserved > Reserved; set to 0.
-                ushort fsSelection = os2Table.fsSelection;
-                TranslatedOS2FontStyle result = Extensions.TranslatedOS2FontStyle.UNSET;
+                var fsSelection = os2Table.fsSelection;
+                var result = Extensions.TranslatedOS2FontStyle.UNSET;
 
                 if ((fsSelection & 0x1) != 0)
                 {
@@ -566,9 +566,9 @@ namespace Typography.OpenFont
 
                 int usWinAscent = typeface.OS2Table.usWinAscent;
                 int usWinDescent = typeface.OS2Table.usWinDescent;
-                int internal_leading = usWinAscent + usWinDescent - typeface.UnitsPerEm;
-                HorizontalHeader hhea = typeface.HheaTable;
-                int external_leading = System.Math.Max(0, hhea.LineGap - ((usWinAscent + usWinDescent) - (hhea.Ascent - hhea.Descent)));
+                var internal_leading = usWinAscent + usWinDescent - typeface.UnitsPerEm;
+                var hhea = typeface.HheaTable;
+                var external_leading = System.Math.Max(0, hhea.LineGap - ((usWinAscent + usWinDescent) - (hhea.Ascent - hhea.Descent)));
                 return usWinAscent + usWinDescent + external_leading;
             }
             /// <summary>
@@ -597,7 +597,7 @@ namespace Typography.OpenFont
                 //so that all pixels fit within these limitations; this is true for screen display only.
 
                 //TODO: please test this
-                HorizontalHeader hhea = typeface.HheaTable;
+                var hhea = typeface.HheaTable;
                 return hhea.Ascent + hhea.Descent + hhea.LineGap;
             }
 
@@ -701,7 +701,7 @@ namespace Typography.OpenFont
         {
             if (typeface.IsCffFont)
             {
-                CFF.Cff1Font cff1Font = typeface.CffTable.Cff1FontSet._fonts[0];
+                var cff1Font = typeface.CffTable.Cff1FontSet._fonts[0];
                 foreach (var kp in cff1Font.GetGlyphNameIter())
                 {
                     yield return kp;
@@ -770,12 +770,12 @@ namespace Typography.OpenFont
 
                 //this a copy from Typography.Contours -> GlyphPartFlattener
 
-                float eachstep = (float)1 / nsteps;
-                float t = eachstep;//start
+                var eachstep = (float)1 / nsteps;
+                var t = eachstep;//start
 
-                for (int n = 1; n < nsteps; ++n)
+                for (var n = 1; n < nsteps; ++n)
                 {
-                    float c = 1.0f - t;
+                    var c = 1.0f - t;
 
                     UpdateMinMax(
                          (c * c * _curX) + (2 * t * c * x1) + (t * t * x2),  //x
@@ -798,12 +798,12 @@ namespace Typography.OpenFont
                 //this a copy from Typography.Contours -> GlyphPartFlattener
 
 
-                float eachstep = (float)1 / nsteps;
-                float t = eachstep;//start
+                var eachstep = (float)1 / nsteps;
+                var t = eachstep;//start
 
-                for (int n = 1; n < nsteps; ++n)
+                for (var n = 1; n < nsteps; ++n)
                 {
-                    float c = 1.0f - t;
+                    var c = 1.0f - t;
 
                     UpdateMinMax(
                         (_curX * c * c * c) + (x1 * 3 * t * c * c) + (x2 * 3 * t * t * c) + x3 * t * t * t,  //x
@@ -908,9 +908,9 @@ namespace Typography.OpenFont
 
             if (typeface.IsCffFont && !typeface._evalCffGlyphBounds)
             {
-                int j = typeface.GlyphCount;
-                CFF.CffEvaluationEngine evalEngine = new CFF.CffEvaluationEngine();
-                CffBoundFinder boundFinder = new CffBoundFinder();
+                var j = typeface.GlyphCount;
+                var evalEngine = new CFF.CffEvaluationEngine();
+                var boundFinder = new CffBoundFinder();
                 for (ushort i = 0; i < j; ++i)
                 {
 #if DEBUG
@@ -920,7 +920,7 @@ namespace Typography.OpenFont
 
                     //}
 #endif
-                    Glyph g = typeface.GetGlyphByIndex(i);
+                    var g = typeface.GetGlyphByIndex(i);
                     boundFinder.Reset();
 
                     evalEngine.Run(boundFinder,

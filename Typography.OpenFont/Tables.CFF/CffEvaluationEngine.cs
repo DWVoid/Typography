@@ -105,7 +105,7 @@ namespace Typography.OpenFont.CFF
 
             //find local subroutine
 
-            int nsubrs = cff1Font._localSubrs.Count;
+            var nsubrs = cff1Font._localSubrs.Count;
             _cffBias = (nsubrs < 1240) ? 107 :
                             (nsubrs < 33900) ? 1131 : 32769; //TODO: review 32769 or 32768
 
@@ -135,18 +135,18 @@ namespace Typography.OpenFont.CFF
         {
             //recursive ***
 
-            Type2EvaluationStack evalStack = GetFreeEvalStack(); //**
+            var evalStack = GetFreeEvalStack(); //**
 
             evalStack._currentX = currentX;
             evalStack._currentY = currentY;
 
-            List<Type2Instruction> insts = instructionList.Insts;
+            var insts = instructionList.Insts;
             evalStack.GlyphTranslator = tx;
-            int j = insts.Count;
+            var j = insts.Count;
 
-            for (int i = 0; i < j; ++i)
+            for (var i = 0; i < j; ++i)
             {
-                Type2Instruction inst = insts[i];
+                var inst = insts[i];
                 //if (inst.Op != OperatorName.LoadInt)
                 //{ 
                 //}
@@ -241,8 +241,8 @@ namespace Typography.OpenFont.CFF
                     case OperatorName.callsubr:
                         {
                             //resolve local subrountine
-                            int rawSubRoutineNum = (int)evalStack.Pop();
-                            Type2GlyphInstructionList resolvedSubroutine = _cff1Font._localSubrs[rawSubRoutineNum + _cffBias];
+                            var rawSubRoutineNum = (int)evalStack.Pop();
+                            var resolvedSubroutine = _cff1Font._localSubrs[rawSubRoutineNum + _cffBias];
                             //then we move to another context
                             //recursive ***
                             Run(tx, resolvedSubroutine, ref evalStack._currentX, ref evalStack._currentY);
@@ -345,7 +345,7 @@ namespace Typography.OpenFont.CFF
             //see [NOTE4]
 
 
-            int i = 0;
+            var i = 0;
             if ((_currentIndex % 2) != 0)
             {
                 i = 1;
@@ -374,8 +374,8 @@ namespace Typography.OpenFont.CFF
             //see [NOTE4]
 
             double hSum = 0;
-            int m = 0;
-            for (int n = _currentIndex; n >= 1; --n)
+            var m = 0;
+            for (var n = _currentIndex; n >= 1; --n)
             {
                 hSum += _argStack[m];
                 m++;
@@ -400,8 +400,8 @@ namespace Typography.OpenFont.CFF
             //see [NOTE4]
 
             double vSum = 0;
-            int m = 0;
-            for (int n = _currentIndex; n >= 1; --n)
+            var m = 0;
+            for (var n = _currentIndex; n >= 1; --n)
             {
                 vSum += _argStack[m];
                 m++;
@@ -437,7 +437,7 @@ namespace Typography.OpenFont.CFF
                 throw new NotSupportedException();
             }
 #endif
-            for (int i = 0; i < _currentIndex;)
+            for (var i = 0; i < _currentIndex;)
             {
                 _glyphTranslator.LineTo((float)(_currentX += _argStack[i]), (float)(_currentY += _argStack[i + 1]));
                 i += 2;
@@ -465,7 +465,7 @@ namespace Typography.OpenFont.CFF
             //number of arguments on the stack.
 
             //first elem
-            int i = 0;
+            var i = 0;
             if ((_currentIndex % 2) != 0)
             {
                 //|- dx1 {dya dxb}*  hlineto (6) |-
@@ -515,7 +515,7 @@ namespace Typography.OpenFont.CFF
             //horizontal lines. The number of lines is determined from the 
             //number of arguments on the stack. 
             //first elem
-            int i = 0;
+            var i = 0;
             if ((_currentIndex % 2) != 0)
             {
                 //|- dy1 {dxa dyb}*  vlineto (7) |-
@@ -572,15 +572,15 @@ namespace Typography.OpenFont.CFF
             //horizontal or vertical(and hence the value is zero), thus
             //reducing the number of arguments needed.
 
-            int i = 0;
+            var i = 0;
 #if DEBUG
             if ((_currentIndex % 6) != 0)
             {
                 // i++;
             }
 #endif
-            double curX = _currentX;
-            double curY = _currentY;
+            var curX = _currentX;
+            var curY = _currentY;
             for (; i < _currentIndex;)
             {
                 _glyphTranslator.Curve4(
@@ -609,15 +609,15 @@ namespace Typography.OpenFont.CFF
             //The first curve need not start horizontal (the odd argument 
             //case). Note the argument order for the odd argument case
 
-            int i = 0;
+            var i = 0;
             if ((_currentIndex % 2) != 0)
             {
                 //odd number                
                 _glyphTranslator.LineTo((float)_currentX, (float)(_currentY += _argStack[i]));
                 i++;
             }
-            double curX = _currentX;
-            double curY = _currentY;
+            var curX = _currentX;
+            var curY = _currentY;
             for (; i < _currentIndex;)
             {
                 _glyphTranslator.Curve4(
@@ -643,8 +643,8 @@ namespace Typography.OpenFont.CFF
             //The tangent for the first Bézier must be horizontal, and the second 
             //must be vertical (except as noted below). 
 
-            int i = 0;
-            int remaining = 0;
+            var i = 0;
+            var remaining = 0;
 
             switch (remaining = (_currentIndex % 8))
             {
@@ -654,10 +654,10 @@ namespace Typography.OpenFont.CFF
                     {
                         //|- {dxa dxb dyb dyc dyd dxe dye dxf}+ dyf? hvcurveto (31) |-
 
-                        double curX = _currentX;
-                        double curY = _currentY;
+                        var curX = _currentX;
+                        var curY = _currentY;
 
-                        int endBefore = _currentIndex - remaining;
+                        var endBefore = _currentIndex - remaining;
                         for (; i < endBefore;)
                         {
                             //line to 
@@ -699,8 +699,8 @@ namespace Typography.OpenFont.CFF
                         //end horizontal.The last curve(the odd argument case) need not
                         //end horizontal/ vertical.
 
-                        double curX = _currentX;
-                        double curY = _currentY;
+                        var curX = _currentX;
+                        var curY = _currentY;
 
                         _glyphTranslator.Curve4(
                                 (float)(curX += _argStack[i + 0]), (float)(curY), //dx1
@@ -709,7 +709,7 @@ namespace Typography.OpenFont.CFF
                                 );
                         i += 4;
 
-                        int endBefore = _currentIndex - remaining;
+                        var endBefore = _currentIndex - remaining;
                         for (; i < endBefore;)
                         {
                             _glyphTranslator.Curve4(
@@ -784,8 +784,8 @@ namespace Typography.OpenFont.CFF
             //hvcurveto; 
 
             //see the description of hvcurveto for more information.
-            int i = 0;
-            int remaining = 0;
+            var i = 0;
+            var remaining = 0;
 
             switch (remaining = (_currentIndex % 8))
             {
@@ -794,9 +794,9 @@ namespace Typography.OpenFont.CFF
                 case 1:
                     {
                         //|- {dya dxb dyb dxc dxd dxe dye dyf}+ dxf? vhcurveto (30) |-  
-                        double curX = _currentX;
-                        double curY = _currentY;
-                        int endBefore = _currentIndex - remaining;
+                        var curX = _currentX;
+                        var curY = _currentY;
+                        var endBefore = _currentIndex - remaining;
                         for (; i < endBefore;)
                         {
                             _glyphTranslator.Curve4(
@@ -829,8 +829,8 @@ namespace Typography.OpenFont.CFF
                     {
 
                         //|- dy1 dx2 dy2 dx3 {dxa dxb dyb dyc dyd dxe dye dxf}* dyf? vhcurveto (30) |-
-                        double curX = _currentX;
-                        double curY = _currentY;
+                        var curX = _currentX;
+                        var curY = _currentY;
 
                         _glyphTranslator.Curve4(
                                (float)(curX), (float)(curY += _argStack[i + 0]), //dy1
@@ -840,7 +840,7 @@ namespace Typography.OpenFont.CFF
 
                         i += 4;
 
-                        int endBefore = _currentIndex - remaining;
+                        var endBefore = _currentIndex - remaining;
                         for (; i < endBefore;)
                         {
                             //line to
@@ -884,15 +884,15 @@ namespace Typography.OpenFont.CFF
             //If the argument count is a multiple of four, the curve starts and ends vertical. 
             //If the argument count is odd, the first curve does not begin with a vertical tangent.
 
-            int i = 0;
+            var i = 0;
             if ((_currentIndex % 2) != 0)
             {
                 //odd number                
                 _glyphTranslator.LineTo((float)(_currentX += _argStack[i]), (float)(_currentY));
                 i++;
             }
-            double curX = _currentX;
-            double curY = _currentY;
+            var curX = _currentX;
+            var curY = _currentY;
             for (; i < _currentIndex;)
             {
                 //line to 
@@ -1260,7 +1260,7 @@ namespace Typography.OpenFont.CFF
 
             }
 #endif
-            return (double)_argStack[--_currentIndex];//*** use prefix 
+            return _argStack[--_currentIndex];//*** use prefix 
         }
 
         public void Ret()

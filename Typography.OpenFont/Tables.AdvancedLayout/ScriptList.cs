@@ -15,7 +15,7 @@ namespace Typography.OpenFont.Tables
         private ScriptList() { }
         public new ScriptTable this[string tagName]
         {
-            get { return TryGetValue(tagName, out ScriptTable ret) ? ret : null; }
+            get { return TryGetValue(tagName, out var ret) ? ret : null; }
         }
 
         public static ScriptList CreateFrom(BinaryReader reader, long beginAt)
@@ -33,23 +33,23 @@ namespace Typography.OpenFont.Tables
             // Offset16  Script     Offset to Script table-from beginning of ScriptList
 
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
-            ushort scriptCount = reader.ReadUInt16();
+            var scriptCount = reader.ReadUInt16();
 
-            ScriptList scriptList = new ScriptList();
+            var scriptList = new ScriptList();
 
             // Read records (tags and table offsets)
-            uint[] scriptTags = new uint[scriptCount];
-            ushort[] scriptOffsets = new ushort[scriptCount];
-            for (int i = 0; i < scriptCount; ++i)
+            var scriptTags = new uint[scriptCount];
+            var scriptOffsets = new ushort[scriptCount];
+            for (var i = 0; i < scriptCount; ++i)
             {
                 scriptTags[i] = reader.ReadUInt32();
                 scriptOffsets[i] = reader.ReadUInt16();
             }
 
             // Read each table and add it to the dictionary
-            for (int i = 0; i < scriptCount; ++i)
+            for (var i = 0; i < scriptCount; ++i)
             {
-                ScriptTable scriptTable = ScriptTable.CreateFrom(reader, beginAt + scriptOffsets[i]);
+                var scriptTable = ScriptTable.CreateFrom(reader, beginAt + scriptOffsets[i]);
                 scriptTable.scriptTag = scriptTags[i];
 
                 scriptList.Add(Utils.TagToString(scriptTags[i]), scriptTable);

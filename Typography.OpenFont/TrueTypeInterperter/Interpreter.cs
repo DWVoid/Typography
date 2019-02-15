@@ -13,7 +13,7 @@ namespace Typography.OpenFont
         public void SetTypeFace(Typeface typeface)
         {
             _currentTypeFace = typeface;
-            Tables.MaxProfile maximumProfile = _currentTypeFace.MaxProfile;
+            var maximumProfile = _currentTypeFace.MaxProfile;
             _interpreter = new SharpFontInterpreter(
                 maximumProfile.MaxStackElements,
                 maximumProfile.MaxStorage,
@@ -31,7 +31,7 @@ namespace Typography.OpenFont
         public GlyphPointF[] HintGlyph(ushort glyphIndex, float glyphSizeInPixel)
         {
 
-            Glyph glyph = _currentTypeFace.GetGlyphByIndex(glyphIndex);
+            var glyph = _currentTypeFace.GetGlyphByIndex(glyphIndex);
             //-------------------------------------------
             //1. start with original points/contours from glyph 
             int horizontalAdv = _currentTypeFace.GetHAdvanceWidthFromGlyphIndex(glyphIndex);
@@ -62,8 +62,8 @@ namespace Typography.OpenFont
 
             //TODO: review here again
 
-            int verticalAdv = 0;
-            int vFrontSideBearing = 0;
+            var verticalAdv = 0;
+            var vFrontSideBearing = 0;
             var pp1 = new GlyphPointF((minX - hFrontSideBearing), 0, true);
             var pp2 = new GlyphPointF(pp1.X + horizontalAdv, 0, true);
             var pp3 = new GlyphPointF(0, maxY + vFrontSideBearing, true);
@@ -71,8 +71,8 @@ namespace Typography.OpenFont
             //-------------------------
 
             //2. use a clone version extend org with 4 elems
-            int orgLen = glyphPoints.Length;
-            GlyphPointF[] newGlyphPoints = Utils.CloneArray(glyphPoints, 4);
+            var orgLen = glyphPoints.Length;
+            var newGlyphPoints = Utils.CloneArray(glyphPoints, 4);
             // add phantom points; these are used to define the extents of the glyph,
             // and can be modified by hinting instructions
             newGlyphPoints[orgLen] = pp1;
@@ -81,8 +81,8 @@ namespace Typography.OpenFont
             newGlyphPoints[orgLen + 3] = pp4;
 
             //3. scale all point to target pixel size
-            float pxScale = _currentTypeFace.CalculateScaleToPixel(glyphSizeInPixel);
-            for (int i = orgLen + 3; i >= 0; --i)
+            var pxScale = _currentTypeFace.CalculateScaleToPixel(glyphSizeInPixel);
+            for (var i = orgLen + 3; i >= 0; --i)
             {
                 newGlyphPoints[i].ApplyScale(pxScale);
             }
@@ -121,7 +121,7 @@ namespace Typography.OpenFont
         static void ApplyScaleOnlyOnXAxis(GlyphPointF[] glyphPoints, float xscale)
         {
             //TODO: review performance here
-            for (int i = glyphPoints.Length - 1; i >= 0; --i)
+            for (var i = glyphPoints.Length - 1; i >= 0; --i)
             {
                 glyphPoints[i].ApplyScaleOnlyOnXAxis(xscale);
             }
@@ -178,7 +178,7 @@ namespace Typography.OpenFont
             if (_controlValueTable == null)
                 _controlValueTable = new float[cvt.Length];
             //copy cvt and apply scale
-            for (int i = cvt.Length - 1; i >= 0; --i)
+            for (var i = cvt.Length - 1; i >= 0; --i)
                 _controlValueTable[i] = cvt[i] * scale;
 
             _scale = scale;
@@ -268,7 +268,7 @@ namespace Typography.OpenFont
                     case OpCode.PUSHB8:
                         {
                             var count = opcode == OpCode.NPUSHB ? stream.NextByte() : opcode - OpCode.PUSHB1 + 1;
-                            for (int i = count - 1; i >= 0; --i)
+                            for (var i = count - 1; i >= 0; --i)
                                 _stack.Push(stream.NextByte());
                         }
                         break;
@@ -283,7 +283,7 @@ namespace Typography.OpenFont
                     case OpCode.PUSHW8:
                         {
                             var count = opcode == OpCode.NPUSHW ? stream.NextByte() : opcode - OpCode.PUSHW1 + 1;
-                            for (int i = count - 1; i >= 0; --i)
+                            for (var i = count - 1; i >= 0; --i)
                                 _stack.Push(stream.NextWord());
                         }
                         break;
@@ -444,7 +444,7 @@ namespace Typography.OpenFont
                     // ==== POINT MODIFICATION ====
                     case OpCode.FLIPPT:
                         {
-                            for (int i = 0; i < _state.Loop; i++)
+                            for (var i = 0; i < _state.Loop; i++)
                             {
                                 var index = _stack.Pop();
                                 //review here again!
@@ -460,7 +460,7 @@ namespace Typography.OpenFont
                     case OpCode.FLIPRGON:
                         {
                             var end = _stack.Pop();
-                            for (int i = _stack.Pop(); i <= end; i++)
+                            for (var i = _stack.Pop(); i <= end; i++)
                                 //points.Current[i].Type = PointType.OnCurve;
                                 _points.Current[i].onCurve = true;
                         }
@@ -468,7 +468,7 @@ namespace Typography.OpenFont
                     case OpCode.FLIPRGOFF:
                         {
                             var end = _stack.Pop();
-                            for (int i = _stack.Pop(); i <= end; i++)
+                            for (var i = _stack.Pop(); i <= end; i++)
                                 //points.Current[i].Type = PointType.Quadratic;
                                 _points.Current[i].onCurve = false;
                         }
@@ -494,7 +494,7 @@ namespace Typography.OpenFont
                             var start = contour == 0 ? 0 : _contours[contour - 1] + 1;
                             var count = _zp2.IsTwilight ? _zp2.Current.Length : _contours[contour] + 1;
 
-                            for (int i = start; i < count; i++)
+                            for (var i = start; i < count; i++)
                             {
                                 // don't move the reference point
                                 if (zone.Current != _zp2.Current || point != i)
@@ -517,7 +517,7 @@ namespace Typography.OpenFont
                             else if (_contours.Length > 0)
                                 count = _contours[_contours.Length - 1] + 1;
 
-                            for (int i = 0; i < count; i++)
+                            for (var i = 0; i < count; i++)
                             {
                                 // don't move the reference point
                                 if (zone.Current != _zp2.Current || point != i)
@@ -601,7 +601,7 @@ namespace Typography.OpenFont
                             var originalRange = DualProject(_zp1.GetOriginal(_state.Rp2) - originalBase);
                             var currentRange = Project(_zp1.GetCurrent(_state.Rp2) - currentBase);
 
-                            for (int i = 0; i < _state.Loop; i++)
+                            for (var i = 0; i < _state.Loop; i++)
                             {
                                 var pointIndex = _stack.Pop();
                                 var point = _zp2.GetCurrent(pointIndex);
@@ -625,7 +625,7 @@ namespace Typography.OpenFont
                         break;
                     case OpCode.ALIGNRP:
                         {
-                            for (int i = 0; i < _state.Loop; i++)
+                            for (var i = 0; i < _state.Loop; i++)
                             {
                                 var pointIndex = _stack.Pop();
                                 var p1 = _zp1.GetCurrent(pointIndex);
@@ -833,7 +833,7 @@ namespace Typography.OpenFont
                                 }
 
                                 var point = 0;
-                                for (int i = 0; i < _contours.Length; i++)
+                                for (var i = 0; i < _contours.Length; i++)
                                 {
                                     var endPoint = _contours[i];
                                     var firstPoint = point;
@@ -874,9 +874,9 @@ namespace Typography.OpenFont
                                             var delta = *GetPoint(current, lastTouched) - *GetPoint(original, lastTouched);
                                             if (delta != 0.0f)
                                             {
-                                                for (int j = firstPoint; j < lastTouched; j++)
+                                                for (var j = firstPoint; j < lastTouched; j++)
                                                     *GetPoint(current, j) += delta;
-                                                for (int j = lastTouched + 1; j <= endPoint; j++)
+                                                for (var j = lastTouched + 1; j <= endPoint; j++)
                                                     *GetPoint(current, j) += delta;
                                             }
                                         }
@@ -940,7 +940,7 @@ namespace Typography.OpenFont
                             // otherwise, we don't have to do anything; we'll keep executing this block
                             if (!_stack.PopBool())
                             {
-                                int indent = 1;
+                                var indent = 1;
                                 while (indent > 0)
                                 {
                                     opcode = SkipNext(ref stream);
@@ -961,7 +961,7 @@ namespace Typography.OpenFont
                         {
                             // assume we hit the true statement of some previous if block
                             // if we had hit false, we would have jumped over this
-                            int indent = 1;
+                            var indent = 1;
                             while (indent > 0)
                             {
                                 opcode = SkipNext(ref stream);
@@ -1131,7 +1131,7 @@ namespace Typography.OpenFont
 
                             var function = _functions[_stack.Pop()];
                             var count = opcode == OpCode.LOOPCALL ? _stack.Pop() : 1;
-                            for (int i = 0; i < count; i++)
+                            for (var i = 0; i < count; i++)
                                 Execute(function, true, false);
                             _callStackSize--;
                         }
@@ -1154,7 +1154,7 @@ namespace Typography.OpenFont
                     case OpCode.DELTAC3:
                         {
                             var last = _stack.Pop();
-                            for (int i = 1; i <= last; i++)
+                            for (var i = 1; i <= last; i++)
                             {
                                 var cvtIndex = _stack.Pop();
                                 var arg = _stack.Pop();
@@ -1187,7 +1187,7 @@ namespace Typography.OpenFont
                     case OpCode.DELTAP3:
                         {
                             var last = _stack.Pop();
-                            for (int i = 1; i <= last; i++)
+                            for (var i = 1; i <= last; i++)
                             {
                                 var pointIndex = _stack.Pop();
                                 var arg = _stack.Pop();
@@ -1276,7 +1276,7 @@ namespace Typography.OpenFont
 
         void OnVectorsUpdated()
         {
-            _fdotp = (float)Vector2.Dot(_state.Freedom, _state.Projection);
+            _fdotp = Vector2.Dot(_state.Freedom, _state.Projection);
             if (Math.Abs(_fdotp) < Epsilon)
                 _fdotp = 1.0f;
         }
@@ -1526,7 +1526,7 @@ namespace Typography.OpenFont
         void ShiftPoints(Vector2 displacement)
         {
             var touch = GetTouchState();
-            for (int i = 0; i < _state.Loop; i++)
+            for (var i = 0; i < _state.Loop; i++)
             {
                 var pointIndex = _stack.Pop();
                 _zp2.Current[pointIndex].P += displacement;
@@ -1577,8 +1577,8 @@ namespace Typography.OpenFont
             }
         }
 
-        float Project(Vector2 point) { return (float)Vector2.Dot(point, _state.Projection); }
-        float DualProject(Vector2 point) { return (float)Vector2.Dot(point, _state.DualProjection); }
+        float Project(Vector2 point) { return Vector2.Dot(point, _state.Projection); }
+        float DualProject(Vector2 point) { return Vector2.Dot(point, _state.DualProjection); }
 
         static OpCode SkipNext(ref InstructionStream stream)
         {
@@ -1597,7 +1597,7 @@ namespace Typography.OpenFont
                 case OpCode.PUSHB8:
                     {
                         var count = opcode == OpCode.NPUSHB ? stream.NextByte() : opcode - OpCode.PUSHB1 + 1;
-                        for (int i = 0; i < count; i++)
+                        for (var i = 0; i < count; i++)
                             stream.NextByte();
                     }
                     break;
@@ -1612,7 +1612,7 @@ namespace Typography.OpenFont
                 case OpCode.PUSHW8:
                     {
                         var count = opcode == OpCode.NPUSHW ? stream.NextByte() : opcode - OpCode.PUSHW1 + 1;
-                        for (int i = 0; i < count; i++)
+                        for (var i = 0; i < count; i++)
                             stream.NextWord();
                     }
                     break;
@@ -1629,8 +1629,8 @@ namespace Typography.OpenFont
             // figure out how much the two reference points
             // have been shifted from their original positions
             float delta1, delta2;
-            float lower = *GetPoint(original, ref1);
-            float upper = *GetPoint(original, ref2);
+            var lower = *GetPoint(original, ref1);
+            var upper = *GetPoint(original, ref2);
             if (lower > upper)
             {
                 var temp = lower;
@@ -1646,16 +1646,16 @@ namespace Typography.OpenFont
                 delta2 = *GetPoint(current, ref2) - upper;
             }
 
-            float lowerCurrent = delta1 + lower;
-            float upperCurrent = delta2 + upper;
-            float scale = (upperCurrent - lowerCurrent) / (upper - lower);
+            var lowerCurrent = delta1 + lower;
+            var upperCurrent = delta2 + upper;
+            var scale = (upperCurrent - lowerCurrent) / (upper - lower);
 
-            for (int i = start; i <= end; i++)
+            for (var i = start; i <= end; i++)
             {
                 // three cases: if it's to the left of the lower reference point or to
                 // the right of the upper reference point, do a shift based on that ref point.
                 // otherwise, interpolate between the two of them
-                float pos = *GetPoint(original, i);
+                var pos = *GetPoint(original, i);
                 if (pos <= lower)
                 {
                     pos += delta1;
@@ -1680,8 +1680,8 @@ namespace Typography.OpenFont
             // figure out how much the two reference points
             // have been shifted from their original positions
             float delta1, delta2;
-            float lower = original[ref1].X;
-            float upper = original[ref2].X;
+            var lower = original[ref1].X;
+            var upper = original[ref2].X;
             if (lower > upper)
             {
                 var temp = lower;
@@ -1697,16 +1697,16 @@ namespace Typography.OpenFont
                 delta2 = current[ref2].X - upper;
             }
 
-            float lowerCurrent = delta1 + lower;
-            float upperCurrent = delta2 + upper;
-            float scale = (upperCurrent - lowerCurrent) / (upper - lower);
+            var lowerCurrent = delta1 + lower;
+            var upperCurrent = delta2 + upper;
+            var scale = (upperCurrent - lowerCurrent) / (upper - lower);
 
-            for (int i = start; i <= end; i++)
+            for (var i = start; i <= end; i++)
             {
                 // three cases: if it's to the left of the lower reference point or to
                 // the right of the upper reference point, do a shift based on that ref point.
                 // otherwise, interpolate between the two of them
-                float pos = original[i].X;
+                var pos = original[i].X;
                 if (pos <= lower)
                 {
                     pos += delta1;
@@ -1730,11 +1730,11 @@ namespace Typography.OpenFont
             // figure out how much the two reference points
             // have been shifted from their original positions
             float delta1, delta2;
-            float lower = original[ref1].Y;
-            float upper = original[ref2].Y;
+            var lower = original[ref1].Y;
+            var upper = original[ref2].Y;
             if (lower > upper)
             {
-                float temp = lower; //swap
+                var temp = lower; //swap
                 lower = upper;
                 upper = temp;
 
@@ -1747,16 +1747,16 @@ namespace Typography.OpenFont
                 delta2 = current[ref2].Y - upper;
             }
 
-            float lowerCurrent = delta1 + lower;
-            float upperCurrent = delta2 + upper;
-            float scale = (upperCurrent - lowerCurrent) / (upper - lower);
+            var lowerCurrent = delta1 + lower;
+            var upperCurrent = delta2 + upper;
+            var scale = (upperCurrent - lowerCurrent) / (upper - lower);
 
-            for (int i = start; i <= end; i++)
+            for (var i = start; i <= end; i++)
             {
                 // three cases: if it's to the left of the lower reference point or to
                 // the right of the upper reference point, do a shift based on that ref point.
                 // otherwise, interpolate between the two of them
-                float pos = original[i].Y;
+                var pos = original[i].Y;
                 if (pos <= lower)
                 {
                     pos += delta1;
@@ -1876,7 +1876,7 @@ namespace Typography.OpenFont
             public void Move(int index)
             {
                 var val = Peek(index);
-                for (int i = _count - index - 1; i < _count - 1; i++)
+                for (var i = _count - index - 1; i < _count - 1; i++)
                     _s[i] = _s[i + 1];
                 _s[_count - 1] = val;
             }

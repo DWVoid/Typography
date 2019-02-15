@@ -89,7 +89,7 @@ namespace Typography.OpenFont.Tables
         public ushort NumOfLongVerMetrics { get; set; }
         protected override void ReadContentFrom(BinaryReader reader)
         {
-            uint version = reader.ReadUInt32();
+            var version = reader.ReadUInt32();
             VersionMajor = (byte)(version >> 16);
             VersionMinor = (byte)(version >> 8);
 

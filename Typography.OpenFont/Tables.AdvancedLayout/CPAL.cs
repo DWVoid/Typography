@@ -17,13 +17,13 @@ namespace Typography.OpenFont.Tables
         // https://www.microsoft.com/typography/otspec/cpal.htm
         protected override void ReadContentFrom(BinaryReader reader)
         {
-            long offset = reader.BaseStream.Position;
+            var offset = reader.BaseStream.Position;
 
-            ushort version = reader.ReadUInt16();
-            ushort entryCount = reader.ReadUInt16(); // XXX: unused?
-            ushort paletteCount = reader.ReadUInt16();
+            var version = reader.ReadUInt16();
+            var entryCount = reader.ReadUInt16(); // XXX: unused?
+            var paletteCount = reader.ReadUInt16();
             ColorCount = reader.ReadUInt16();
-            uint colorsOffset = reader.ReadUInt32();
+            var colorsOffset = reader.ReadUInt32();
 
             Palettes = Utils.ReadUInt16Array(reader, paletteCount);
 
@@ -41,8 +41,8 @@ namespace Typography.OpenFont.Tables
             //uint8   red     Red value(B2).
             //uint8   alpha   Alpha value(B3).
 
-            byte[] colorBGRABuffer = _colorBGRABuffer;
-            int startAt = colorIndex * 4;//bgra
+            var colorBGRABuffer = _colorBGRABuffer;
+            var startAt = colorIndex * 4;//bgra
             b = colorBGRABuffer[startAt];
             g = colorBGRABuffer[startAt + 1];
             r = colorBGRABuffer[startAt + 2];

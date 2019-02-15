@@ -15,11 +15,11 @@ namespace Typography.OpenFont
             if (s_stdMacGlyphNames == null)
             {
                 s_stdMacGlyphNames = new string[260];
-                using (StringReader strReader = new StringReader(orgGlyphNames))
+                using (var strReader = new StringReader(orgGlyphNames))
                 {
-                    string[] seps = new string[] { " " };
+                    var seps = new string[] { " " };
 
-                    string line = strReader.ReadLine();
+                    var line = strReader.ReadLine();
 
                     while (line != null)
                     {
@@ -27,12 +27,12 @@ namespace Typography.OpenFont
                         if (line != "")
                         {
 
-                            string[] key_value = line.Split(seps, System.StringSplitOptions.RemoveEmptyEntries);
+                            var key_value = line.Split(seps, System.StringSplitOptions.RemoveEmptyEntries);
                             if (key_value.Length != 2)
                             {
                                 throw new System.NotSupportedException();
                             }
-                            if (int.TryParse(key_value[0], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out int index))
+                            if (int.TryParse(key_value[0], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var index))
                             {
 #if DEBUG
                                 if (index < 0 || index > 258)

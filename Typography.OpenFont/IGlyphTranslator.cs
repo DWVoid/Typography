@@ -82,17 +82,17 @@ namespace Typography.OpenFont
         public static void Read(this IGlyphTranslator tx, GlyphPointF[] glyphPoints, ushort[] contourEndPoints, float scale = 1)
         {
 
-            int startContour = 0;
-            int cpoint_index = 0;//current point index
+            var startContour = 0;
+            var cpoint_index = 0;//current point index
 
-            int todoContourCount = contourEndPoints.Length;
+            var todoContourCount = contourEndPoints.Length;
             //----------------------------------- 
             //1. start read data from a glyph
             tx.BeginRead(todoContourCount);
             //-----------------------------------
             float latest_moveto_x = 0;
             float latest_moveto_y = 0;
-            int curveControlPointCount = 0; // 1 curve control point => Quadratic, 2 curve control points => Cubic
+            var curveControlPointCount = 0; // 1 curve control point => Quadratic, 2 curve control points => Cubic
 
 
             while (todoContourCount > 0)
@@ -102,18 +102,18 @@ namespace Typography.OpenFont
 
                 //foreach contour...
                 //next contour will begin at...
-                int nextCntBeginAtIndex = contourEndPoints[startContour] + 1;
+                var nextCntBeginAtIndex = contourEndPoints[startContour] + 1;
 
                 //reset  ...
 
-                bool has_c_begin = false;  //see below [A]
-                Vector2 c_begin = new Vector2(); //special point if the glyph starts with 'off-curve' control point                 
-                Vector2 c1 = new Vector2(); //control point of quadratic curve
+                var has_c_begin = false;  //see below [A]
+                var c_begin = new Vector2(); //special point if the glyph starts with 'off-curve' control point                 
+                var c1 = new Vector2(); //control point of quadratic curve
                 //-------------------------------------------------------------------
-                bool offCurveMode = false;
-                bool foundFirstOnCurvePoint = false;
-                bool startWithOffCurve = false;
-                int cnt_point_count = 0;
+                var offCurveMode = false;
+                var foundFirstOnCurvePoint = false;
+                var startWithOffCurve = false;
+                var cnt_point_count = 0;
                 //-------------------------------------------------------------------
                 //[A]
                 //first point may start with 'ON CURVE" or 'OFF-CURVE'
@@ -127,7 +127,7 @@ namespace Typography.OpenFont
                 //-------------------------------------------------------------------
 
 #if DEBUG
-                int dbug_cmdcount = 0;
+                var dbug_cmdcount = 0;
 #endif 
                 for (; cpoint_index < nextCntBeginAtIndex; ++cpoint_index)
                 {
@@ -149,11 +149,11 @@ namespace Typography.OpenFont
                     //      if p is first point then set this to x0,y0
                     //      else then p is end point of a line.
 
-                    GlyphPointF p = glyphPoints[cpoint_index];
+                    var p = glyphPoints[cpoint_index];
                     cnt_point_count++;
 
-                    float p_x = p.X * scale;
-                    float p_y = p.Y * scale;
+                    var p_x = p.X * scale;
+                    var p_y = p.Y * scale;
 
                     //int vtag = (int)flags[cpoint_index] & 0x1;
                     //bool has_dropout = (((vtag >> 2) & 0x1) != 0);
@@ -281,7 +281,7 @@ namespace Typography.OpenFont
                                 {
                                     if (!foundFirstOnCurvePoint)
                                     {
-                                        Vector2 mid2 = GetMidPoint(c1, p_x, p_y);
+                                        var mid2 = GetMidPoint(c1, p_x, p_y);
                                         //----------
                                         //2. generate curve3 *** 
                                         c_begin = c1;
@@ -311,7 +311,7 @@ namespace Typography.OpenFont
                                     //
                                     //this is done by ...
                                     //1. calculate mid point between c1 and the latest point (p_x,p_y)
-                                    Vector2 mid = GetMidPoint(c1, p_x, p_y);
+                                    var mid = GetMidPoint(c1, p_x, p_y);
                                     //----------
                                     //2. generate curve3 ***
                                     tx.Curve3(
@@ -349,7 +349,7 @@ namespace Typography.OpenFont
 
                                 if (has_c_begin)
                                 {
-                                    Vector2 mid = GetMidPoint(c1, c_begin.X, c_begin.Y);
+                                    var mid = GetMidPoint(c1, c_begin.X, c_begin.Y);
                                     //----------
                                     //2. generate curve3 ***
                                     tx.Curve3(
@@ -414,7 +414,7 @@ namespace Typography.OpenFont
         //for CFF1
         public static void Read(this IGlyphTranslator tx, CFF.Cff1Font cff1Font, CFF.Cff1GlyphData glyphData, float scale = 1)
         {
-            CFF.CffEvaluationEngine evalEngine = new CFF.CffEvaluationEngine();
+            var evalEngine = new CFF.CffEvaluationEngine();
             evalEngine.Run(tx, cff1Font, glyphData.GlyphInstructions, scale);
         }
     }

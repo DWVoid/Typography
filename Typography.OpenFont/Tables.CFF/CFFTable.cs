@@ -63,7 +63,7 @@ namespace Typography.OpenFont.Tables
         internal Cff1FontSet Cff1FontSet => _cff1FontSet;
         protected override void ReadContentFrom(BinaryReader reader)
         {
-            uint tableOffset = this.Header.Offset;
+            var tableOffset = this.Header.Offset;
             //
             //
             //Table 8 Header Format
@@ -72,11 +72,11 @@ namespace Typography.OpenFont.Tables
             //Card8     minor   Format minor version(starting at 0)
             //Card8     hdrSize Header size(bytes)
             //OffSize   offSize Absolute offset(0) size
-            byte[] header = reader.ReadBytes(4);
-            byte major = header[0];
-            byte minor = header[1];
-            byte hdrSize = header[2];
-            byte offSize = header[3];
+            var header = reader.ReadBytes(4);
+            var major = header[0];
+            var minor = header[1];
+            var hdrSize = header[2];
+            var offSize = header[3];
             ////---------
             //name index
 
@@ -85,14 +85,14 @@ namespace Typography.OpenFont.Tables
                 default: throw new NotSupportedException();
                 case 1:
                     {
-                        Cff1Parser cff1 = new Cff1Parser();
+                        var cff1 = new Cff1Parser();
                         cff1.ParseAfterHeader(tableOffset, reader);
                         _cff1FontSet = cff1.ResultCff1FontSet;
                     }
                     break;
                 case 2:
                     {
-                        Cff2Parser cff2 = new Cff2Parser();
+                        var cff2 = new Cff2Parser();
                         cff2.ParseAfterHeader(reader);
                     }
                     break;

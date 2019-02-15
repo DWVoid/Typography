@@ -24,8 +24,8 @@ namespace Typography.OpenFont.Tables
                 // uint16    GlyphCount               Number of glyphs in the GlyphArray
                 // uint16    GlyphArray[GlyphCount]   Array of glyph IDs — in numerical order
 
-                ushort glyphCount = reader.ReadUInt16();
-                ushort[] glyphs = Utils.ReadUInt16Array(reader, glyphCount);
+                var glyphCount = reader.ReadUInt16();
+                var glyphs = Utils.ReadUInt16Array(reader, glyphCount);
                 return new CoverageFmt1() { _orderedGlyphIdList = glyphs };
             }
 
@@ -33,7 +33,7 @@ namespace Typography.OpenFont.Tables
             {
                 // "The glyph indices must be in numerical order for binary searching of the list"
                 // (https://www.microsoft.com/typography/otspec/chapter2.htm#coverageFormat1)
-                int n = Array.BinarySearch(_orderedGlyphIdList, glyphIndex);
+                var n = Array.BinarySearch(_orderedGlyphIdList, glyphIndex);
                 return n < 0 ? -1 : n;
             }
             public override IEnumerable<ushort> GetExpandedValueIter() { return _orderedGlyphIdList; }
@@ -42,8 +42,8 @@ namespace Typography.OpenFont.Tables
 
             public override string ToString()
             {
-                List<string> stringList = new List<string>();
-                foreach (ushort g in _orderedGlyphIdList)
+                var stringList = new List<string>();
+                foreach (var g in _orderedGlyphIdList)
                 {
                     stringList.Add(g.ToString());
                 }
@@ -62,7 +62,7 @@ namespace Typography.OpenFont.Tables
                 // [...] quick calculation of the Coverage Index for any glyph in any range using the
                 // formula: Coverage Index (glyphID) = startCoverageIndex + glyphID - startGlyphID.
                 // (https://www.microsoft.com/typography/otspec/chapter2.htm#coverageFormat2)
-                int n = Array.BinarySearch(_endIndices, glyphIndex);
+                var n = Array.BinarySearch(_endIndices, glyphIndex);
                 n = n < 0 ? ~n : n;
                 if (n >= RangeCount || glyphIndex < _startIndices[n])
                 {
@@ -73,9 +73,9 @@ namespace Typography.OpenFont.Tables
 
             public override IEnumerable<ushort> GetExpandedValueIter()
             {
-                for (int i = 0; i < RangeCount; ++i)
+                for (var i = 0; i < RangeCount; ++i)
                 {
-                    for (ushort n = _startIndices[i]; n <= _endIndices[i]; ++n)
+                    for (var n = _startIndices[i]; n <= _endIndices[i]; ++n)
                     {
                         yield return n;
                     }
@@ -95,11 +95,11 @@ namespace Typography.OpenFont.Tables
                 // uint16    EndGlyphID          Last glyph ID in the range
                 // uint16    StartCoverageIndex  Coverage Index of first glyph ID in range
 
-                ushort rangeCount = reader.ReadUInt16();
-                ushort[] startIndices = new ushort[rangeCount];
-                ushort[] endIndices = new ushort[rangeCount];
-                ushort[] coverageIndices = new ushort[rangeCount];
-                for (int i = 0; i < rangeCount; ++i)
+                var rangeCount = reader.ReadUInt16();
+                var startIndices = new ushort[rangeCount];
+                var endIndices = new ushort[rangeCount];
+                var coverageIndices = new ushort[rangeCount];
+                for (var i = 0; i < rangeCount; ++i)
                 {
                     startIndices[i] = reader.ReadUInt16();
                     endIndices[i] = reader.ReadUInt16();
@@ -118,8 +118,8 @@ namespace Typography.OpenFont.Tables
 
             public override string ToString()
             {
-                List<string> stringList = new List<string>();
-                for (int i = 0; i < RangeCount; ++i)
+                var stringList = new List<string>();
+                for (var i = 0; i < RangeCount; ++i)
                 {
                     stringList.Add(string.Format("{0}-{1}", _startIndices[i], _endIndices[i]));
                 }
@@ -137,7 +137,7 @@ namespace Typography.OpenFont.Tables
         public static CoverageTable CreateFrom(BinaryReader reader, long beginAt)
         {
             reader.BaseStream.Seek(beginAt, SeekOrigin.Begin);
-            ushort format = reader.ReadUInt16();
+            var format = reader.ReadUInt16();
             switch (format)
             {
                 default: throw new NotSupportedException();
@@ -148,8 +148,8 @@ namespace Typography.OpenFont.Tables
 
         public static CoverageTable[] CreateMultipleCoverageTables(long initPos, ushort[] offsets, BinaryReader reader)
         {
-            List<CoverageTable> results = new List<CoverageTable>(offsets.Length);
-            foreach (ushort offset in offsets)
+            var results = new List<CoverageTable>(offsets.Length);
+            foreach (var offset in offsets)
             {
                 results.Add(CoverageTable.CreateFrom(reader, initPos + offset));
             }
